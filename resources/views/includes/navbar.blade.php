@@ -23,8 +23,8 @@
             <a href="{{ url('/katalog') }}" class="text-green-900 hover:underline">KATALOG</a>
             <a href="{{ url('/artikel') }}" class="text-green-900 hover:underline">ARTIKEL</a>
             <a href="{{ url('/kontak') }}" class="text-green-900 hover:underline">KONTAK</a>
-            <a href="{{ url('/login') }}" class="text-green-900 hover:underline text-right leading-tight">DAFTAR </a>
-            <a href="{{ url('/login') }}" class="text-green-900 hover:underline text-right leading-tight">LOGIN</a>
+            <a href="{{ route('register') }}" class="text-green-900 hover:underline text-right leading-tight">DAFTAR </a>
+            <a href="{{ route('login') }}" class="text-green-900 hover:underline text-right leading-tight">LOGIN</a>
         </div>
 
         <!-- Tombol menu (mode mobile) -->
@@ -39,6 +39,6 @@
         <a href="{{ url('/katalog') }}" class="py-1">KATALOG</a>
         <a href="{{ url('/artikel') }}" class="py-1">ARTIKEL</a>
         <a href="{{ url('/kontak') }}" class="py-1">KONTAK</a>
-        <a href="{{ url('/login') }}" class="py-1">DAFTAR / LOGIN</a>
+        <a href="{{ route('login') }}" class="py-1">DAFTAR / LOGIN</a>
     </div>
 </div>

@@ -22,7 +22,7 @@ class KatalogResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('sub_sektor_id')
+                Forms\Components\Select::make('sub_sectors_id')
                     ->relationship('subSektor', 'title')
                     ->required(),
 

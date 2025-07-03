@@ -4,13 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Katalog extends Model
 {
     use HasFactory;
 
+    protected $table = 'catalogs';
+
     protected $fillable = [
-        'sub_sektor_id',
+        'sub_sectors_id',
         'title',
         'slug',
         'produk',
@@ -23,8 +26,8 @@ class Katalog extends Model
         'lazada',    
     ];
 
-    public function subSektor()
+    public function subSektor(): BelongsTo
     {
-        return $this->belongsTo(SubSektor::class);
+        return $this->belongsTo(SubSektor::class, 'sub_sectors_id');
     }
 }

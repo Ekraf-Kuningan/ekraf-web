@@ -1,3 +1,4 @@
+# Laravel
 *.log
 .DS_Store
 .env
@@ -22,3 +23,14 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# User uploads - keep folder structure but ignore files
+/storage/app/public/avatars/*
+/storage/app/public/articles/*
+/storage/app/public/banners/*
+/storage/app/public/catalogs/*
+# Keep .gitkeep files to maintain folder structure
+!/storage/app/public/avatars/.gitkeep
+!/storage/app/public/articles/.gitkeep
+!/storage/app/public/banners/.gitkeep
+!/storage/app/public/catalogs/.gitkeep

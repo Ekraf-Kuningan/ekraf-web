@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -28,7 +29,22 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Redirect berdasarkan level user
+        $user = Auth::user();
+        
+        // Cek kolom id_level dan redirect accordingly
+        if (isset($user->id_level)) {
+            if ($user->id_level == 1) {
+                // SuperAdmin ke panel superadmin
+                return redirect('/superadmin');
+            } elseif ($user->id_level == 2) {
+                // Admin ke panel admin
+                return redirect('/admin');
+            }
+        }
+        
+        // Default redirect untuk member atau role lainnya
+        return redirect('/');
     }
 
     /**
