@@ -10,8 +10,13 @@ class BeritaController extends Controller
 {
     public function index()
     {
-        
-        $banners = Banner::all();
+        // Get active banners with their related articles, ordered by sort_order
+        $banners = Banner::with('artikel')
+            ->where('is_active', true)
+            ->whereNotNull('artikel_id')
+            ->orderBy('sort_order', 'asc')
+            ->get();
+            
         $featureds = Artikel::where('is_featured', true)->get();
         $artikels = Artikel::orderBy('created_at', 'desc')->get()->take(4);
         $authors = Author::all()->take(5);

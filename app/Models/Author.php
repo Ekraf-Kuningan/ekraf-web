@@ -42,6 +42,6 @@ class Author extends Model
     }
 
     public function artikel(){
-        return $this->hasMany(Artikel::class);
+        return $this->hasMany(Artikel::class, 'author_id');
     }
 }

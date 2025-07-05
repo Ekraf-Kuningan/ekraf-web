@@ -22,7 +22,21 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+<<<<<<< HEAD
         'id_level',
+=======
+        'username',
+        'gender',
+        'phone_number',
+        'image',
+        'business_name',
+        'business_status',
+        'level_id',
+        'business_category_id',
+        'resetPasswordToken',
+        'resetPasswordTokenExpiry',
+        'verifiedAt'
+>>>>>>> 55429e9da719d0d4f3e3c82dfb4884050e952892
     ];
 
     /**
@@ -33,6 +47,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'resetPasswordToken',
     ];
 
     /**
@@ -45,6 +60,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+<<<<<<< HEAD
             'id_level' => 'integer',
         ];
     }
@@ -87,5 +103,66 @@ class User extends Authenticatable
     public function hasAdminAccess()
     {
         return in_array($this->id_level, [1, 2]);
+=======
+            'resetPasswordTokenExpiry' => 'datetime',
+            'verifiedAt' => 'datetime',
+        ];
+    }
+
+    /**
+     * Get the level that owns the user.
+     */
+    public function level()
+    {
+        return $this->belongsTo(Level::class, 'level_id');
+    }
+
+    /**
+     * Get the business category that owns the user.
+     */
+    public function businessCategory()
+    {
+        return $this->belongsTo(BusinessCategory::class, 'business_category_id');
+    }
+
+    /**
+     * Get the products for the user.
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'user_id');
+    }
+
+    /**
+     * Check if user is superadmin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->level_id === 1;
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->level_id === 2;
+    }
+
+    /**
+     * Check if user is regular user
+     */
+    public function isUser(): bool
+    {
+        return $this->level_id === 3;
+    }
+
+    /**
+     * Check if user has admin or superadmin access
+     */
+    public function hasAdminAccess(): bool
+    {
+        return $this->level_id === 1 || $this->level_id === 2;
+>>>>>>> 55429e9da719d0d4f3e3c82dfb4884050e952892
     }
 }

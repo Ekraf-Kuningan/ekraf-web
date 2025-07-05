@@ -38,9 +38,20 @@ class ArtikelResource extends Resource
                 Forms\Components\TextInput::make('slug')
                 ->readOnly(),
                 Forms\Components\FileUpload::make('thumbnail')
-                ->image()
-                ->required()
-                ->columnSpanFull(),
+                    ->label('Article Thumbnail')
+                    ->image()
+                    ->directory('articles')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->maxSize(2048) // 2MB
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('16:9')
+                    ->imageResizeTargetWidth('800')
+                    ->imageResizeTargetHeight('450')
+                    ->required()
+                    ->columnSpanFull()
+                    ->helperText('Upload thumbnail untuk artikel. Ukuran ideal: 800x450px'),
                 Forms\Components\RichEditor::make('content')
                 ->required()
                 ->columnSpanFull(),
@@ -53,13 +64,32 @@ class ArtikelResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('author.name'),
-                Tables\Columns\TextColumn::make('artikelkategori.title'),
-                Tables\Columns\TextColumn::make('title'),
-                Tables\Columns\TextColumn::make('slug'),
-                Tables\Columns\ImageColumn::make('thumbnail'),
+                Tables\Columns\ImageColumn::make('thumbnail')
+                    ->label('Thumbnail')
+                    ->square()
+                    ->size(50),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(30),
+                Tables\Columns\TextColumn::make('author.name')
+                    ->label('Author')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('artikelkategori.title')
+                    ->label('Category')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('banners_count')
+                    ->label('Banners')
+                    ->counts('banners')
+                    ->suffix(' banner(s)')
+                    ->color('success')
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('slug')
+                    ->searchable()
+                    ->limit(25)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ToggleColumn::make('is_featured')
-
+                    ->label('Featured')
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('author_id')

@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Level extends Model
 {
     protected $fillable = [
-        'level'
+        'name'
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'level_id');
+    }
 }

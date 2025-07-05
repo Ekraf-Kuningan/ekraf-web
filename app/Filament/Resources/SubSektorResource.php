@@ -26,11 +26,35 @@ class SubSektorResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
-                 ->live(onBlur: true)
-                ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
-                ->required(),
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->required()
+                    ->maxLength(100),
+                    
                 Forms\Components\TextInput::make('slug')
-                ->readOnly(),
+                    ->readOnly(),
+                    
+                Forms\Components\FileUpload::make('image')
+                    ->label('Sub Sector Image')
+                    ->image()
+                    ->directory('sub-sectors')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->maxSize(2048) // 2MB
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('16:9')
+                    ->imageResizeTargetWidth('800')
+                    ->imageResizeTargetHeight('450')
+                    ->nullable()
+                    ->columnSpanFull(),
+                    
+                Forms\Components\Textarea::make('description')
+                    ->label('Description')
+                    ->rows(3)
+                    ->maxLength(500)
+                    ->nullable()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -38,8 +62,20 @@ class SubSektorResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title'),
-                Tables\Columns\TextColumn::make('slug'),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Image')
+                    ->square()
+                    ->size(50),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(40),
+                Tables\Columns\TextColumn::make('slug')
+                    ->searchable()
+                    ->limit(30),
+                Tables\Columns\TextColumn::make('description')
+                    ->limit(50)
+                    ->toggleable(),
             ])
             ->filters([
                 //

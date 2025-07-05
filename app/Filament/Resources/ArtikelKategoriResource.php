@@ -26,11 +26,40 @@ class ArtikelKategoriResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
-                 ->live(onBlur: true)
-                ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
-                ->required(),
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->required()
+                    ->maxLength(100),
+                    
                 Forms\Components\TextInput::make('slug')
-                ->readOnly(),
+                    ->readOnly(),
+                    
+                Forms\Components\FileUpload::make('icon')
+                    ->label('Category Icon')
+                    ->image()
+                    ->directory('article-categories')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->maxSize(1024) // 1MB
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'])
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('1:1')
+                    ->imageResizeTargetWidth('150')
+                    ->imageResizeTargetHeight('150')
+                    ->nullable()
+                    ->helperText('Upload an icon for this article category.'),
+                    
+                Forms\Components\Textarea::make('description')
+                    ->label('Description')
+                    ->rows(3)
+                    ->maxLength(300)
+                    ->nullable()
+                    ->columnSpanFull(),
+                    
+                Forms\Components\ColorPicker::make('color')
+                    ->label('Category Color')
+                    ->nullable()
+                    ->helperText('Choose a color theme for this category.'),
             ]);
     }
 
@@ -38,8 +67,23 @@ class ArtikelKategoriResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title'),
-                Tables\Columns\TextColumn::make('slug'),
+                Tables\Columns\ImageColumn::make('icon')
+                    ->label('Icon')
+                    ->circular()
+                    ->size(40),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(40),
+                Tables\Columns\TextColumn::make('slug')
+                    ->searchable()
+                    ->limit(30),
+                Tables\Columns\ColorColumn::make('color')
+                    ->label('Color')
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->limit(50)
+                    ->toggleable(),
             ])
             ->filters([
                 //

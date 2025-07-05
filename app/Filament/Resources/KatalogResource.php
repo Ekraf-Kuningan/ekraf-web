@@ -22,7 +22,11 @@ class KatalogResource extends Resource
     {
         return $form
             ->schema([
+<<<<<<< HEAD
                 Forms\Components\Select::make('sub_sectors_id')
+=======
+                Forms\Components\Select::make('sub_sector_id')
+>>>>>>> 55429e9da719d0d4f3e3c82dfb4884050e952892
                     ->relationship('subSektor', 'title')
                     ->required(),
 
@@ -34,36 +38,92 @@ class KatalogResource extends Resource
                 Forms\Components\TextInput::make('slug')
                     ->readOnly(),
 
-                Forms\Components\FileUpload::make('produk')
+                Forms\Components\FileUpload::make('image')
+                    ->label('Product Image')
                     ->image()
+                    ->directory('katalogs')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->maxSize(2048) // 2MB
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('4:3')
+                    ->imageResizeTargetWidth('800')
+                    ->imageResizeTargetHeight('600')
                     ->required()
                     ->columnSpanFull(),
-
-                Forms\Components\TextInput::make('harga')
-                    ->numeric()
-                    ->prefix('Rp')
-                    ->required(),
 
                 Forms\Components\RichEditor::make('content')
+                    ->label('Deskripsi Katalog')
                     ->required()
                     ->columnSpanFull(),
 
-                Forms\Components\TextInput::make('no_hp')
-                    ->label('No. HP')
-                    ->prefix('+62')
-                    ->tel(),
+                // Informasi Kontak
+                Forms\Components\Section::make('Informasi Kontak')
+                    ->schema([
+                        Forms\Components\TextInput::make('contact')
+                            ->label('Kontak')
+                            ->maxLength(255)
+                            ->placeholder('Nama kontak atau person in charge'),
+                        
+                        Forms\Components\TextInput::make('phone_number')
+                            ->label('Nomor Telepon/WhatsApp')
+                            ->tel()
+                            ->maxLength(20)
+                            ->placeholder('081234567890'),
+                        
+                        Forms\Components\TextInput::make('email')
+                            ->label('Email')
+                            ->email()
+                            ->maxLength(255)
+                            ->placeholder('email@example.com'),
+                    ])->columns(2),
 
-                Forms\Components\TextInput::make('instagram')
-                    ->prefix('@'),
+                // Media Sosial & Toko Online
+                Forms\Components\Section::make('Media Sosial & Toko Online')
+                    ->schema([
+                        Forms\Components\TextInput::make('instagram')
+                            ->label('Instagram')
+                            ->url()
+                            ->maxLength(255)
+                            ->placeholder('https://instagram.com/username')
+                            ->prefixIcon('heroicon-o-at-symbol'),
+                        
+                        Forms\Components\TextInput::make('shopee')
+                            ->label('Shopee')
+                            ->url()
+                            ->maxLength(255)
+                            ->placeholder('https://shopee.co.id/shop/username')
+                            ->prefixIcon('heroicon-o-shopping-cart'),
+                        
+                        Forms\Components\TextInput::make('tokopedia')
+                            ->label('Tokopedia')
+                            ->url()
+                            ->maxLength(255)
+                            ->placeholder('https://tokopedia.com/shop-name')
+                            ->prefixIcon('heroicon-o-building-storefront'),
+                        
+                        Forms\Components\TextInput::make('lazada')
+                            ->label('Lazada')
+                            ->url()
+                            ->maxLength(255)
+                            ->placeholder('https://lazada.co.id/shop/shop-name')
+                            ->prefixIcon('heroicon-o-globe-alt'),
+                    ])->columns(2),
 
-                Forms\Components\TextInput::make('shopee')
-                    ->label('Link Shopee'),
+                // Relasi dengan Products
+                Forms\Components\Select::make('products')
+                    ->label('Related Products')
+                    ->multiple()
+                    ->relationship('products', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->helperText('Pilih produk yang akan ditampilkan di katalog ini.')
+                    ->columnSpanFull(),
 
-                Forms\Components\TextInput::make('tokopedia')
-                    ->label('Link Tokopedia'),
-
-                Forms\Components\TextInput::make('lazada')
-                    ->label('Link Lazada'),
+                // Fields lama disembunyikan tapi tetap ada untuk backward compatibility
+                Forms\Components\Hidden::make('product_name'),
+                Forms\Components\Hidden::make('price'),
             ]);
     }
 
@@ -71,27 +131,29 @@ class KatalogResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Image')
+                    ->square()
+                    ->size(50),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(30),
                 Tables\Columns\TextColumn::make('subSektor.title')
-                    ->label('Sub Sektor'),
-
-                Tables\Columns\TextColumn::make('title'),
-                Tables\Columns\TextColumn::make('slug'),
-                Tables\Columns\ImageColumn::make('produk'),
-                Tables\Columns\TextColumn::make('harga')
-                    ->money('IDR', true),
-
-                Tables\Columns\TextColumn::make('no_hp')
-                    ->label('No. HP'),
-
-                Tables\Columns\TextColumn::make('instagram')
-                    ->label('IG'),
-
-                Tables\Columns\TextColumn::make('shopee'),
-                Tables\Columns\TextColumn::make('tokopedia'),
-                Tables\Columns\TextColumn::make('lazada'),
+                    ->label('Sub Sektor')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('products_count')
+                    ->label('Products')
+                    ->counts('products')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('sub_sektor_id')
+                Tables\Filters\SelectFilter::make('sub_sector_id')
                     ->relationship('subSektor', 'title'),
             ])
             ->actions([

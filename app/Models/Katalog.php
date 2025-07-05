@@ -13,21 +13,51 @@ class Katalog extends Model
     protected $table = 'catalogs';
 
     protected $fillable = [
+<<<<<<< HEAD
         'sub_sectors_id',
+=======
+        'sub_sector_id',
+>>>>>>> 55429e9da719d0d4f3e3c82dfb4884050e952892
         'title',
         'slug',
-        'produk',
-        'harga',      
+        'image',
+        'product_name',
+        'price',      
         'content',
-        'no_hp',      
+        'contact',
+        'phone_number',      
+        'email',
         'instagram',  
         'shopee',     
         'tokopedia', 
         'lazada',    
     ];
 
+<<<<<<< HEAD
     public function subSektor(): BelongsTo
     {
         return $this->belongsTo(SubSektor::class, 'sub_sectors_id');
+=======
+    protected $casts = [
+        'price' => 'decimal:2'
+    ];
+
+    public function subSektor()
+    {
+        return $this->belongsTo(SubSektor::class, 'sub_sector_id');
+    }
+
+    /**
+     * Many-to-Many relationship with Product
+     * Satu katalog bisa memiliki banyak produk, 
+     * dan satu produk bisa ditampilkan di banyak katalog
+     */
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'catalog_product', 'catalog_id', 'product_id')
+                    ->withTimestamps()
+                    ->withPivot(['sort_order', 'is_featured'])
+                    ->orderBy('sort_order');
+>>>>>>> 55429e9da719d0d4f3e3c82dfb4884050e952892
     }
 }

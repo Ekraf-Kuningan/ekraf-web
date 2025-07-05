@@ -13,11 +13,13 @@ class LandingController extends Controller
 {
     public function index(){
         $subsektors = SubSektor::all();
-        $katalogs = Katalog::latest()->take(6)->get();
-        $banners = Banner::all();
+        $katalogs = Katalog::with(['subSektor', 'products' => function($query) {
+            $query->where('status', 'disetujui');
+        }])->latest()->take(6)->get();
+            
         $featureds = Artikel::where('is_featured', true)->get();
         $artikels = Artikel::orderBy('created_at', 'desc')->get()->take(4);
         $authors = Author::all()->take(5);
-        return view('pages.landing',compact('subsektors','katalogs','banners', 'featureds', 'artikels', 'authors'));
+        return view('pages.landing',compact('subsektors','katalogs', 'featureds', 'artikels', 'authors'));
     }
 }

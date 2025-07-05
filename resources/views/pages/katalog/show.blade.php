@@ -19,69 +19,175 @@
     <div class="max-w-6xl mx-auto py-10 px-6">
         <div class="grid md:grid-cols-2 gap-8 mb-8 items-start">
             <div class="bg-white rounded-2xl p-6 shadow border text-gray-700">
-                <h2 class="text-lg font-bold text-orange-600 mb-2">{{ $katalog->title }}</h2>
+                <h2 class="text-lg font-bold text-orange-600 mb-2">{{ $katalog->title ?? 'Judul tidak tersedia' }}</h2>
                 <p class="text-sm leading-relaxed mb-6">
-                    {!! $katalog->content !!}
+                    {!! $katalog->content ?? 'Deskripsi katalog tidak tersedia.' !!}
                 </p>
 
-                <h3 class="text-md font-bold text-orange-600 mb-1 mt-4">Harga</h3>
-                <p class="text-sm mb-4">
-                    {{ $katalog->harga ? 'Rp ' . number_format($katalog->harga, 0, ',', '.') . ' / set' : '-' }}</p>
+                <h3 class="text-orange-500 font-bold text-md mb-2">Sub Sektor</h3>
+                <p class="text-sm mb-4">{{ $katalog->subSektor->title ?? 'Sub sektor tidak tersedia' }}</p>
 
-                <h3 class="text-orange-500 font-bold text-md mb-2">Lain-lain</h3>
-                <ul class="text-gray-700 text-sm list-disc ml-5">
-                    @if ($katalog->no_hp)
-                        <li>WhatsApp: +62{{ $katalog->no_hp }}</li>
-                    @endif
-                    @if ($katalog->instagram)
-                        <li>Instagram: {{ $katalog->instagram }}</li>
-                    @endif
-                </ul>
+                @if($katalog->products->count() > 0)
+                    <h3 class="text-orange-500 font-bold text-md mb-2">Produk Terkait</h3>
+                    <p class="text-sm text-gray-600 mb-4">{{ $katalog->products->count() }} produk tersedia dalam katalog ini</p>
+                @endif
+
+                <!-- Kontak Informasi -->
+                @if($katalog->contact || $katalog->phone_number || $katalog->email || $katalog->instagram || $katalog->shopee || $katalog->tokopedia || $katalog->lazada)
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <h3 class="text-orange-500 font-bold text-md mb-3">Informasi Kontak</h3>
+                        
+                        @if($katalog->contact)
+                            <div class="mb-2">
+                                <span class="text-xs text-gray-500">Kontak:</span>
+                                <p class="text-sm">{{ $katalog->contact }}</p>
+                            </div>
+                        @endif
+                        
+                        @if($katalog->phone_number)
+                            <div class="mb-2">
+                                <span class="text-xs text-gray-500">Nomor Telepon:</span>
+                                <p class="text-sm">{{ $katalog->phone_number }}</p>
+                                <a href="https://wa.me/62{{ $katalog->phone_number }}" target="_blank"
+                                   class="inline-flex items-center text-green-600 hover:text-green-800 transition text-sm mt-1">
+                                    <i class="fab fa-whatsapp mr-1"></i>
+                                    Chat WhatsApp
+                                </a>
+                            </div>
+                        @endif
+                        
+                        @if($katalog->email)
+                            <div class="mb-3">
+                                <span class="text-xs text-gray-500">Email:</span>
+                                <p class="text-sm">
+                                    <a href="mailto:{{ $katalog->email }}" class="text-blue-600 hover:text-blue-800 transition">
+                                        {{ $katalog->email }}
+                                    </a>
+                                </p>
+                            </div>
+                        @endif
+
+                        <!-- Media Sosial & Toko Online -->
+                        @if($katalog->instagram || $katalog->shopee || $katalog->tokopedia || $katalog->lazada)
+                            <div class="mt-4 pt-3 border-t border-gray-100">
+                                <h4 class="text-orange-400 font-semibold text-sm mb-2">Media Sosial & Toko Online</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    @if($katalog->instagram)
+                                        <a href="{{ $katalog->instagram }}" target="_blank"
+                                           class="inline-flex items-center px-3 py-1 text-xs bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full hover:from-purple-600 hover:to-pink-600 transition">
+                                            <i class="fab fa-instagram mr-1"></i>
+                                            Instagram
+                                        </a>
+                                    @endif
+                                    
+                                    @if($katalog->shopee)
+                                        <a href="{{ $katalog->shopee }}" target="_blank"
+                                           class="inline-flex items-center px-3 py-1 text-xs bg-orange-500 text-white rounded-full hover:bg-orange-600 transition">
+                                            <i class="fas fa-shopping-bag mr-1"></i>
+                                            Shopee
+                                        </a>
+                                    @endif
+                                    
+                                    @if($katalog->tokopedia)
+                                        <a href="{{ $katalog->tokopedia }}" target="_blank"
+                                           class="inline-flex items-center px-3 py-1 text-xs bg-green-500 text-white rounded-full hover:bg-green-600 transition">
+                                            <i class="fas fa-store mr-1"></i>
+                                            Tokopedia
+                                        </a>
+                                    @endif
+                                    
+                                    @if($katalog->lazada)
+                                        <a href="{{ $katalog->lazada }}" target="_blank"
+                                           class="inline-flex items-center px-3 py-1 text-xs bg-blue-500 text-white rounded-full hover:bg-blue-600 transition">
+                                            <i class="fas fa-shopping-cart mr-1"></i>
+                                            Lazada
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </div>
 
             <div>
-                <img src="{{ asset('storage/' . $katalog->produk) }}" alt="{{ $katalog->title }}"
-                    class="rounded-2xl shadow w-full object-cover">
+                @if($katalog->image && file_exists(public_path('storage/' . $katalog->image)))
+                    <img src="{{ asset('storage/' . $katalog->image) }}" alt="{{ $katalog->title }}"
+                        class="rounded-2xl shadow w-full object-cover">
+                @else
+                    <div class="rounded-2xl shadow w-full h-64 bg-gray-200 flex items-center justify-center">
+                        <div class="text-center text-gray-400">
+                            <i class="fas fa-image text-4xl mb-2"></i>
+                            <p class="text-sm">Gambar tidak tersedia</p>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <a href="https://wa.me/62{{ $katalog->no_hp }}" target="_blank"
-                class="flex items-center justify-center bg-white border rounded-xl p-4 shadow hover:shadow-md transition">
-                <i class="fas fa-phone-alt text-orange-500 text-xl mr-2"></i>
-                <span class="text-sm font-medium">Contact Person</span>
-            </a>
+        <!-- Produk Terkait -->
+        @if($katalog->products->count() > 0)
+        <section class="mb-12">
+            <h2 class="text-xl font-bold text-orange-600 mb-6">Produk Terkait</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @foreach($katalog->products as $product)
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <!-- Product Image -->
+                    <div class="relative">
+                        @if($product->image && file_exists(public_path('storage/' . $product->image)))
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
+                                class="w-full h-48 object-cover">
+                        @else
+                            <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                <div class="text-center text-gray-400">
+                                    <i class="fas fa-box text-3xl mb-2"></i>
+                                    <p class="text-sm font-medium">No Image</p>
+                                </div>
+                            </div>
+                        @endif
 
-            @php
-                $marketplaceLink = null;
-                $marketplaceLabel = null;
-                $marketplaceIcon = null;
-
-                if ($katalog->shopee) {
-                    $marketplaceLink = $katalog->shopee;
-                    $marketplaceLabel = 'Shopee';
-                    $marketplaceIcon = 'fas fa-store text-orange-500';
-                } elseif ($katalog->tokopedia) {
-                    $marketplaceLink = $katalog->tokopedia;
-                    $marketplaceLabel = 'Tokopedia';
-                    $marketplaceIcon = 'fas fa-shopping-cart text-green-500';
-                } elseif ($katalog->lazada) {
-                    $marketplaceLink = $katalog->lazada;
-                    $marketplaceLabel = 'Lazada';
-                    $marketplaceIcon = 'fas fa-shopping-basket text-purple-600';
-                }
-            @endphp
-
-            @if ($marketplaceLink)
-                <a href="{{ $marketplaceLink }}" target="_blank"
-                    class="flex items-center justify-center bg-white border rounded-xl p-4 shadow hover:shadow-md transition">
-                    <i class="{{ $marketplaceIcon }} text-xl mr-2"></i>
-                    <span class="text-sm font-medium">{{ $marketplaceLabel }}</span>
-                </a>
-            @endif
-        </div>
-
-
+                        <!-- Category Badge -->
+                        <div class="absolute top-3 right-3">
+                            <span class="inline-block bg-white/90 backdrop-blur text-xs px-2 py-1 rounded-full font-medium text-gray-700 shadow-sm">
+                                {{ $product->businessCategory->name ?? 'Kategori' }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Info -->
+                    <div class="p-4 space-y-3">
+                        <!-- Product Name -->
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-sm leading-tight mb-1 line-clamp-2">
+                                {{ $product->name }}
+                            </h3>
+                            <p class="text-xs text-gray-500 font-medium">
+                                <i class="fas fa-user text-[10px] mr-1"></i>
+                                {{ $product->owner_name }}
+                            </p>
+                        </div>
+                        
+                        <!-- Price & Stock -->
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-orange-600 font-bold text-sm">
+                                    {{ $product->price ? 'Rp ' . number_format($product->price, 0, ',', '.') : 'Hubungi Penjual' }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Description -->
+                        @if($product->description)
+                            <p class="text-xs text-gray-600 leading-relaxed line-clamp-3">
+                                {{ Str::limit(strip_tags($product->description), 80) }}
+                            </p>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
 
     </div>
 
@@ -93,13 +199,20 @@
                 <a href="{{ route('katalog.show', $kat->slug) }}">
                     <div
                         class="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition transform hover:scale-105 duration-300">
-                        <img src="{{ asset('storage/' . $kat->produk) }}" alt="{{ $kat->title }}"
-                            class="w-full h-40 object-cover">
+                        @if($kat->image && file_exists(public_path('storage/' . $kat->image)))
+                            <img src="{{ asset('storage/' . $kat->image) }}" alt="{{ $kat->title }}"
+                                class="w-full h-40 object-cover">
+                        @else
+                            <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
+                                <div class="text-center text-gray-400">
+                                    <i class="fas fa-image text-2xl mb-1"></i>
+                                    <p class="text-xs">No Image</p>
+                                </div>
+                            </div>
+                        @endif
                         <div class="p-4">
                             <h3 class="text-base font-bold text-orange-600 mb-1">{{ $kat->title }}</h3>
-                            <p class="text-xs text-gray-500 mb-2">
-                                {{ $kat->harga ? 'Rp ' . number_format($kat->harga, 0, ',', '.') : '' }}</p>
-                            <p class="text-xs text-gray-600 mb-3">Produk yang dijual UMKM Itu</p>
+                            <p class="text-xs text-gray-600 mb-3">{{ Str::limit(strip_tags($kat->content), 80) }}</p>
                             <span class="inline-block bg-gray-100 text-[10px] px-2 py-1 rounded-full">
                                 {{ $kat->subSektor->title ?? '-' }}
                             </span>

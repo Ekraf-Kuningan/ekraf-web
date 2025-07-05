@@ -12,18 +12,18 @@ class KatalogController extends Controller
     {
         $subsektors = SubSektor::all();
 
-        $katalogs = Katalog::query();
+        $katalogs = Katalog::with('subSektor');
 
         // Filter berdasarkan subsektor
         if ($request->has('subsektor') && $request->subsektor != '') {
-            $katalogs->where('sub_sektor_id', $request->subsektor);
+            $katalogs->where('sub_sector_id', $request->subsektor);
         }
 
         // Filter sort
         if ($request->sort == 'termurah') {
-            $katalogs->orderBy('harga', 'asc');
+            $katalogs->orderBy('price', 'asc');
         } elseif ($request->sort == 'termahal') {
-            $katalogs->orderBy('harga', 'desc');
+            $katalogs->orderBy('price', 'desc');
         } elseif ($request->sort == 'terbaru') {
             $katalogs->orderBy('created_at', 'desc');
         } else {
@@ -38,7 +38,8 @@ class KatalogController extends Controller
     {
         $subsektors = SubSektor::all();
         $selectedSubsektor = SubSektor::where('slug', $slug)->firstOrFail();
-        $katalogs = Katalog::where('sub_sektor_id', $selectedSubsektor->id)
+        $katalogs = Katalog::with('subSektor')
+            ->where('sub_sector_id', $selectedSubsektor->id)
             ->latest()
             ->paginate(6)
             ->withQueryString();
@@ -47,8 +48,20 @@ class KatalogController extends Controller
     }
     public function show($slug)
     {
-        $katalog = Katalog::where('slug', $slug)->firstOrFail();
-        $others = Katalog::where('id', '!=', $katalog->id)->latest()->take(6)->get();
+        $katalog = Katalog::with([
+            'subSektor', 
+            'products' => function($query) {
+                $query->where('status', 'disetujui');
+            },
+            'products.businessCategory', 
+            'products.user'
+        ])->where('slug', $slug)->firstOrFail();
+        
+        $others = Katalog::with('subSektor')
+                        ->where('id', '!=', $katalog->id)
+                        ->latest()
+                        ->take(6)
+                        ->get();
         return view('pages.katalog.show', compact('katalog', 'others'));
     }
 }

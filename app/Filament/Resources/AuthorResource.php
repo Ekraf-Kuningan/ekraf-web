@@ -28,8 +28,19 @@ class AuthorResource extends Resource
                 Forms\Components\TextInput::make('username')
                 ->required(),
                 Forms\Components\FileUpload::make('avatar')
-                ->image()
-                ->required(),
+                    ->label('Profile Picture')
+                    ->image()
+                    ->directory('authors')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->maxSize(1024) // 1MB
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->imageResizeMode('cover')
+                    ->imageCropAspectRatio('1:1')
+                    ->imageResizeTargetWidth('200')
+                    ->imageResizeTargetHeight('200')
+                    ->avatar()
+                    ->required(),
                 Forms\Components\TextArea::make('bio')
                 ->required()
             ]);
