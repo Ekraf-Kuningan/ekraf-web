@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -16,49 +17,69 @@ return new class extends Migration
         // It's safer to drop foreign keys before any renames.
         // We will drop them by column name, which is more reliable than guessing the constraint name.
         if (Schema::hasTable('users')) {
-            Schema::table('users', function (Blueprint $table) {
-                // To make this re-runnable, we must check if the column exists before dropping its FK
-                if (Schema::hasColumn('users', 'id_level')) {
-                    $table->dropForeign(['id_level']);
+            // Drop foreign keys only if they exist (MySQL)
+            $conn = DB::connection();
+            if (method_exists($conn, 'getDoctrineSchemaManager')) {
+                $sm = $conn->getDoctrineSchemaManager();
+                $doctrineTable = $sm->introspectTable('users');
+                $fkNames = array_map(function($fk) { return $fk->getName(); }, $doctrineTable->getForeignKeys());
+                if (in_array('users_id_level_foreign', $fkNames)) {
+                    DB::statement('ALTER TABLE `users` DROP FOREIGN KEY `users_id_level_foreign`');
                 }
-                if (Schema::hasColumn('users', 'id_kategori_usaha')) {
-                    $table->dropForeign(['id_kategori_usaha']);
+                if (in_array('users_id_kategori_usaha_foreign', $fkNames)) {
+                    DB::statement('ALTER TABLE `users` DROP FOREIGN KEY `users_id_kategori_usaha_foreign`');
                 }
-            });
+            }
         }
         if (Schema::hasTable('tbl_product')) {
-            Schema::table('tbl_product', function (Blueprint $table) {
-                if (Schema::hasColumn('tbl_product', 'id_user')) {
-                    $table->dropForeign(['id_user']);
+            $conn = DB::connection();
+            if (method_exists($conn, 'getDoctrineSchemaManager')) {
+                $sm = $conn->getDoctrineSchemaManager();
+                $doctrineTable = $sm->introspectTable('tbl_product');
+                $fkNames = array_map(function($fk) { return $fk->getName(); }, $doctrineTable->getForeignKeys());
+                if (in_array('tbl_product_id_user_foreign', $fkNames)) {
+                    DB::statement('ALTER TABLE `tbl_product` DROP FOREIGN KEY `tbl_product_id_user_foreign`');
                 }
-                if (Schema::hasColumn('tbl_product', 'id_kategori_usaha')) {
-                    $table->dropForeign(['id_kategori_usaha']);
+                if (in_array('tbl_product_id_kategori_usaha_foreign', $fkNames)) {
+                    DB::statement('ALTER TABLE `tbl_product` DROP FOREIGN KEY `tbl_product_id_kategori_usaha_foreign`');
                 }
-            });
+            }
         }
         if (Schema::hasTable('tbl_olshop_link')) {
-            Schema::table('tbl_olshop_link', function (Blueprint $table) {
-                if (Schema::hasColumn('tbl_olshop_link', 'id_produk')) {
-                    $table->dropForeign(['id_produk']);
+            $conn = DB::connection();
+            if (method_exists($conn, 'getDoctrineSchemaManager')) {
+                $sm = $conn->getDoctrineSchemaManager();
+                $doctrineTable = $sm->introspectTable('tbl_olshop_link');
+                $fkNames = array_map(function($fk) { return $fk->getName(); }, $doctrineTable->getForeignKeys());
+                if (in_array('tbl_olshop_link_id_produk_foreign', $fkNames)) {
+                    DB::statement('ALTER TABLE `tbl_olshop_link` DROP FOREIGN KEY `tbl_olshop_link_id_produk_foreign`');
                 }
-            });
+            }
         }
         if (Schema::hasTable('katalogs')) {
-            Schema::table('katalogs', function (Blueprint $table) {
-                if (Schema::hasColumn('katalogs', 'sub_sektor_id')) {
-                    $table->dropForeign(['sub_sektor_id']);
+            $conn = DB::connection();
+            if (method_exists($conn, 'getDoctrineSchemaManager')) {
+                $sm = $conn->getDoctrineSchemaManager();
+                $doctrineTable = $sm->introspectTable('katalogs');
+                $fkNames = array_map(function($fk) { return $fk->getName(); }, $doctrineTable->getForeignKeys());
+                if (in_array('katalogs_sub_sektor_id_foreign', $fkNames)) {
+                    DB::statement('ALTER TABLE `katalogs` DROP FOREIGN KEY `katalogs_sub_sektor_id_foreign`');
                 }
-            });
+            }
         }
         if (Schema::hasTable('tbl_user_temp')) {
-            Schema::table('tbl_user_temp', function (Blueprint $table) {
-                if (Schema::hasColumn('tbl_user_temp', 'id_level')) {
-                    $table->dropForeign(['id_level']);
+            $conn = DB::connection();
+            if (method_exists($conn, 'getDoctrineSchemaManager')) {
+                $sm = $conn->getDoctrineSchemaManager();
+                $doctrineTable = $sm->introspectTable('tbl_user_temp');
+                $fkNames = array_map(function($fk) { return $fk->getName(); }, $doctrineTable->getForeignKeys());
+                if (in_array('tbl_user_temp_id_level_foreign', $fkNames)) {
+                    DB::statement('ALTER TABLE `tbl_user_temp` DROP FOREIGN KEY `tbl_user_temp_id_level_foreign`');
                 }
-                if (Schema::hasColumn('tbl_user_temp', 'id_kategori_usaha')) {
-                    $table->dropForeign(['id_kategori_usaha']);
+                if (in_array('tbl_user_temp_id_kategori_usaha_foreign', $fkNames)) {
+                    DB::statement('ALTER TABLE `tbl_user_temp` DROP FOREIGN KEY `tbl_user_temp_id_kategori_usaha_foreign`');
                 }
-            });
+            }
         }
 
         // Now, disable constraints as an extra safety measure and proceed.
@@ -90,16 +111,34 @@ return new class extends Migration
 
         if (Schema::hasTable('levels')) {
             Schema::table('levels', function (Blueprint $table) {
+                $columns = DB::select("SHOW COLUMNS FROM levels");
+                $hasAutoIncrement = false;
+                $hasPrimaryKey = false;
+                foreach ($columns as $col) {
+                    if (isset($col->Extra) && strpos($col->Extra, 'auto_increment') !== false) {
+                        $hasAutoIncrement = true;
+                    }
+                    if (isset($col->Key) && $col->Key === 'PRI') {
+                        $hasPrimaryKey = true;
+                    }
+                }
+                // If dropping id_level, ensure a PK exists
                 if (Schema::hasColumn('levels', 'id_level')) {
-                     // Change id to bigIncrements to match Prisma schema (UnsignedBigInt)
-                    $table->unsignedBigInteger('id')->first()->change();
-                    $table->dropColumn('id_level');
-                } else if (!Schema::hasColumn('levels', 'id')) {
+                    // If id_level is PK and no other PK, add id PK first
+                    if (!Schema::hasColumn('levels', 'id') && !$hasAutoIncrement) {
+                        $table->bigIncrements('id')->first();
+                    }
+                    // Only drop id_level if a PK will remain
+                    if (Schema::hasColumn('levels', 'id')) {
+                        $table->dropColumn('id_level');
+                    }
+                } else if (!Schema::hasColumn('levels', 'id') && !$hasAutoIncrement) {
                     $table->bigIncrements('id')->first();
-                } else {
+                }
+                // Only modify 'id' if it exists
+                if (Schema::hasColumn('levels', 'id')) {
                     $table->unsignedBigInteger('id')->change();
                 }
-
                 if (Schema::hasColumn('levels', 'level')) $table->renameColumn('level', 'name');
                 if (!Schema::hasColumn('levels', 'created_at')) $table->timestamps(0);
             });
