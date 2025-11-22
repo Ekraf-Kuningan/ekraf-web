@@ -13,7 +13,10 @@ class ListKatalogs extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Tambah Katalog')
+                ->icon('heroicon-o-plus-circle')
+                ->color('warning'),
         ];
     }
 }

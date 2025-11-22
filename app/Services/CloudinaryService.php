@@ -46,7 +46,7 @@ class CloudinaryService
 
             return [
                 'public_id' => $result['public_id'],
-                'secure_url' => $result['secure_url'],
+                'secure_url' => $result['url'], // Use HTTP instead of HTTPS for development
                 'url' => $result['url'],
                 'width' => $result['width'] ?? null,
                 'height' => $result['height'] ?? null,

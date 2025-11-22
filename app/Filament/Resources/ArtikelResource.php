@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ArtikelResource\Pages;
 use App\Filament\Resources\ArtikelResource\RelationManagers;
+use App\Filament\Traits\HasRoleBasedAccess;
 use App\Models\Artikel;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -17,9 +18,18 @@ use Illuminate\Support\Str;
 
 class ArtikelResource extends Resource
 {
+    use HasRoleBasedAccess;
+    
     protected static ?string $model = Artikel::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
+    protected static ?string $navigationLabel = 'Artikel';
+    protected static ?string $navigationGroup = 'Manajemen Konten';
+    protected static ?string $pluralLabel = 'Artikel';
+    protected static ?int $navigationSort = 1;
+
+    
+    
 
     public static function form(Form $form): Form
     {

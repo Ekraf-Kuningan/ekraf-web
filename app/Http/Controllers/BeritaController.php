@@ -14,7 +14,7 @@ class BeritaController extends Controller
         $banners = Banner::with('artikel')
             ->where('is_active', true)
             ->whereNotNull('artikel_id')
-            ->orderBy('sort_order', 'asc')
+            ->orderBy('banners.sort_order', 'asc')
             ->get();
             
         $featureds = Artikel::where('is_featured', true)->get();

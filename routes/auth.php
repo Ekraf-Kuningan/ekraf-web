@@ -7,15 +7,23 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\CustomRegisterController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
+    Route::get('register-pelakuekraf', [CustomRegisterController::class, 'create'])
+        ->name('register-pelakuekraf');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register-pelakuekraf', [CustomRegisterController::class, 'store']);
+
+    // Email verification route (untuk user yang belum login)
+    Route::get('verify-email/{token}', [CustomRegisterController::class, 'verifyEmail'])
+        ->name('verify.email');
+
+    // Resend verification email
+    Route::post('resend-verification', [CustomRegisterController::class, 'resendVerification'])
+        ->name('resend.verification');
 
     // Route login GET dan POST dihapus karena kita menggunakan custom login
     // Route::get('login', [AuthenticatedSessionController::class, 'create'])

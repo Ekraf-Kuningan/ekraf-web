@@ -12,6 +12,8 @@ class EditAuthor extends EditRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = AuthorResource::class;
+    protected static ?string $title = 'Edit Author';
+    protected static ?string $breadcrumb = 'Edit Author';
 
     protected function getHeaderActions(): array
     {
@@ -28,6 +30,11 @@ class EditAuthor extends EditRecord
         }
         
         return $data;
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 
     protected function mutateFormDataBeforeSave(array $data): array

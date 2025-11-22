@@ -7,12 +7,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
+        "blade-ui-kit/blade-heroicons": "^2.6",
         "cloudinary-labs/cloudinary-laravel": "^3.0",
         "doctrine/dbal": "^4.2",
         "filament/filament": "3.3",
         "intervention/image": "^3.11",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "maatwebsite/excel": "^3.1",
         "yoelpc4/laravel-cloudinary": "^6.0"
     },
     "require-dev": {

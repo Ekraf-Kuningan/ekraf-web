@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AuthorResource\Pages;
 use App\Filament\Resources\AuthorResource\RelationManagers;
+use App\Filament\Traits\HasRoleBasedAccess;
 use App\Models\Author;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,9 +16,15 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AuthorResource extends Resource
 {
+    use HasRoleBasedAccess;
+    
     protected static ?string $model = Author::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationLabel = 'Penulis';
+    protected static ?string $navigationGroup = 'Manajemen Konten';
+    protected static ?string $pluralLabel = 'Penulis';
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {

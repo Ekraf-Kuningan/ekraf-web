@@ -6,7 +6,7 @@
         <p class="mb-6 text-sm md:text-base">Daftarkan usaha kreatif Anda dan dapatkan berbagai manfaat untuk
             mengembangkan bisnis anda ke tingkat yang lebih tinggi</p>
         <div class="flex justify-center gap-4 flex-wrap mb-8">
-            <a href="#"
+            <a href="{{ route('register-pelakuekraf') }}"
                 class="bg-white text-[#1E293B] font-semibold px-6 py-3 rounded hover:bg-gray-200 flex items-center gap-2">
                 <i class="fas fa-user-plus"></i> Daftar Sekarang
             </a>
@@ -55,7 +55,7 @@
         <div>
             <h3 class="font-bold mb-4">Layanan</h3>
             <ul class="space-y-2 text-gray-400 text-sm">
-                <li><a href="#" class="hover:text-white">Pendaftaran EKRAF</a></li>
+                <li><a href="/register-pelakuekraf" class="hover:text-white">Pendaftaran EKRAF</a></li>
                 <li><a href="#" class="hover:text-white">Pelatihan & Workshop</a></li>
                 <li><a href="#" class="hover:text-white">Konsultasi Bisnis</a></li>
                 <li><a href="#" class="hover:text-white">Akses Pendanaan</a></li>
@@ -71,6 +71,6 @@
         </div>
     </div>
     <div class="border-t border-gray-700 text-center py-4 text-gray-500 text-sm">
-        © 2025 KUNINGAN KREATIF GALERI (Fachrul, Nurlatif) . All rights reserved.
+        © 2025 KUNINGAN KREATIF GALERI. All rights reserved by Fachrul, Nurlatif.
     </div>
 </footer>

@@ -12,6 +12,8 @@ class EditUser extends EditRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = UserResource::class;
+    protected static ?string $title = 'Edit User';
+    protected static ?string $breadcrumb = 'Edit User';
 
     protected function getHeaderActions(): array
     {
@@ -44,5 +46,9 @@ class EditUser extends EditRecord
             200,
             $oldCloudinaryId
         );
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

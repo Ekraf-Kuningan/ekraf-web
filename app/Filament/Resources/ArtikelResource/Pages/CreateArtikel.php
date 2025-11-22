@@ -13,6 +13,8 @@ class CreateArtikel extends CreateRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = ArtikelResource::class;
+    protected static ?string $title = 'Tambah Artikel';
+    protected static ?string $breadcrumb = 'Tambah Artikel';
     
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -37,5 +39,10 @@ class CreateArtikel extends CreateRecord
             // Re-throw the exception to show user-friendly error
             throw new \Exception('Gagal mengupload gambar: ' . $e->getMessage());
         }
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

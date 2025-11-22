@@ -9,11 +9,15 @@ use Filament\Resources\Pages\ListRecords;
 class ListSubSektors extends ListRecords
 {
     protected static string $resource = SubSektorResource::class;
+    protected static ?string $title = 'Daftar Sub Sektor';
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Tambah Sub Sektor')
+                ->icon('heroicon-o-plus-circle')
+                ->color('warning'),
         ];
     }
 }

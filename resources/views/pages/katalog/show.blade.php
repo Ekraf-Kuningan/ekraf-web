@@ -20,16 +20,21 @@
         <div class="grid md:grid-cols-2 gap-8 mb-8 items-start">
             <div class="bg-white rounded-2xl p-6 shadow border text-gray-700">
                 <h2 class="text-lg font-bold text-orange-600 mb-2">{{ $katalog->title ?? 'Judul tidak tersedia' }}</h2>
-                <p class="text-sm leading-relaxed mb-6">
-                    {!! $katalog->content ?? 'Deskripsi katalog tidak tersedia.' !!}
+                <p class="text-sm leading-relaxed mb-6 whitespace-pre-line">
+                    {{ strip_tags($katalog->content ?? 'Deskripsi katalog tidak tersedia.') }}
                 </p>
 
                 <h3 class="text-orange-500 font-bold text-md mb-2">Sub Sektor</h3>
                 <p class="text-sm mb-4">{{ $katalog->subSektor->title ?? 'Sub sektor tidak tersedia' }}</p>
 
+                <h3 class="text-orange-500 font-bold text-md mb-2">Produk dalam Katalog</h3>
                 @if($katalog->products->count() > 0)
-                    <h3 class="text-orange-500 font-bold text-md mb-2">Produk Terkait</h3>
-                    <p class="text-sm text-gray-600 mb-4">{{ $katalog->products->count() }} produk tersedia dalam katalog ini</p>
+                    <p class="text-sm text-gray-600 mb-4">
+                        <i class="fas fa-box mr-1"></i>
+                        {{ $katalog->products->count() }} produk tersedia
+                    </p>
+                @else
+                    <p class="text-sm text-gray-500 italic mb-4">Belum ada produk dalam katalog ini</p>
                 @endif
 
                 <!-- Kontak Informasi -->
@@ -116,12 +121,15 @@
             </div>
         </div>
 
-        <!-- Produk Terkait -->
-        @if($katalog->products->count() > 0)
+        <!-- Produk dalam Katalog -->
         <section class="mb-12">
-            <h2 class="text-xl font-bold text-orange-600 mb-6">Produk Terkait</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @foreach($katalog->products as $product)
+            <h2 class="text-2xl font-bold text-orange-600 mb-6">
+                <i class="fas fa-shopping-bag mr-2"></i>Produk dalam Katalog Ini
+            </h2>
+            
+            @if($katalog->products->count() > 0)
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    @foreach($katalog->products as $product)
                 <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100">
                     <!-- Product Image -->
                     <div class="relative">
@@ -145,7 +153,7 @@
                             </h3>
                             <p class="text-xs text-gray-500 font-medium">
                                 <i class="fas fa-user text-[10px] mr-1"></i>
-                                {{ $product->owner_name }}
+                                {{ $product->user->name }}
                             </p>
                         </div>
                         
@@ -156,20 +164,40 @@
                                     {{ $product->price ? 'Rp ' . number_format($product->price, 0, ',', '.') : 'Hubungi Penjual' }}
                                 </p>
                             </div>
+                            
                         </div>
                         
-                        <!-- Description -->
+                        {{-- <!-- Description -->
                         @if($product->description)
-                            <p class="text-xs text-gray-600 leading-relaxed line-clamp-3">
+                            <p class="text-xs text-gray-600 leading-relaxed line-clamp-2">
                                 {{ Str::limit(strip_tags($product->description), 80) }}
                             </p>
-                        @endif
+                        @endif --}}
+
+                        <!-- Detail Button -->
+                        <button 
+                            onclick="openProductModal('{{ $product->id }}')"
+                            class="w-full mt-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm font-medium rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-sm hover:shadow-md">
+                            <i class="fas fa-eye mr-2"></i>
+                            Lihat Produk
+                        </button>
                     </div>
                 </div>
                 @endforeach
             </div>
+            @else
+                <!-- Empty State -->
+                <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-12 text-center">
+                    <div class="max-w-sm mx-auto">
+                        <i class="fas fa-box-open text-gray-400 text-5xl mb-4"></i>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Belum Ada Produk</h3>
+                        <p class="text-gray-500 text-sm">
+                            Katalog ini belum memiliki produk yang ditampilkan. Produk akan muncul di sini setelah ditambahkan.
+                        </p>
+                    </div>
+                </div>
+            @endif
         </section>
-        @endif
 
     </div>
 
@@ -195,4 +223,178 @@
             @endforeach
         </div>
     </section>
+
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" onclick="closeProductModal()">
+        <div class="flex min-h-screen items-center justify-center p-4">
+            <div id="modalBox" class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl transform transition-all duration-300" onclick="event.stopPropagation()">
+                <!-- Modal Header (Sticky) -->
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl z-20 shadow-sm">
+                    <h3 class="text-xl font-bold text-gray-900">Produk Terkait</h3>
+                    <button onclick="closeProductModal()" class="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition">
+                        <i class="fas fa-times text-gray-600 text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Body (Scrollable) -->
+                <div id="modalContent" class="overflow-y-auto" style="max-height: calc(90vh - 5rem);">
+                    <div class="p-6">
+                        <!-- Loading spinner -->
+                        <div class="flex items-center justify-center py-12">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Product data for modal
+    const productsData = {!! json_encode($katalog->products->mapWithKeys(function($p) {
+        return [$p->id => [
+            'id' => $p->id,
+            'name' => $p->name,
+            'description' => $p->description,
+            'price' => $p->price,
+            'stock' => $p->stock,
+            'phone_number' => $p->user->phone_number ?? '-',
+            'user_name' => $p->user->name ?? '-',
+            'image' => $p->image_url,
+            'category' => optional($p->subSektor)->title ?? 'Tanpa Kategori',
+            'business_category' => optional($p->businessCategory)->name ?? null,
+        ]];
+    })) !!};
+
+    function openProductModal(productId) {
+        const modal = document.getElementById('productModal');
+        const modalContent = document.getElementById('modalContent');
+        const product = productsData[productId];
+        
+        if (!product) return;
+        
+        // Build modal content
+        modalContent.innerHTML = `
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Image Section -->
+                    <div class="space-y-4">
+                        <div class="aspect-square bg-gray-100 rounded-2xl overflow-hidden">
+                            ${product.image 
+                                ? `<img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">`
+                                : `<div class="w-full h-full flex items-center justify-center">
+                                       <i class="fas fa-image text-gray-300 text-8xl"></i>
+                                   </div>`
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Info Section -->
+                    <div class="space-y-6">
+                        <!-- Category -->
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <span class="px-4 py-2 bg-orange-50 text-orange-700 text-sm font-semibold rounded-full">
+                                <i class="fas fa-tag mr-1"></i>${product.category}
+                            </span>
+                        </div>
+
+                        <!-- Product Name -->
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-900 mb-2">${product.name}</h2>
+                            <p class="text-sm text-gray-600">
+                                <i class="fas fa-user mr-1"></i>
+                                ${product.user_name}
+                            </p>
+                        </div>
+
+                        <!-- Price & Stock -->
+                        <div class="flex items-center gap-6 p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl">
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-600 mb-1">Harga</p>
+                                <p class="text-2xl font-bold text-orange-600">Rp ${new Intl.NumberFormat('id-ID').format(product.price)}</p>
+                            </div>
+                            <div class="h-12 w-px bg-orange-300"></div>
+                            <div class="flex-1">
+                                <p class="text-sm text-gray-600 mb-1">Stok</p>
+                                <p class="text-2xl font-bold text-gray-900">${product.stock}</p>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="p-4 bg-gray-50 rounded-xl">
+                            <h4 class="font-bold text-gray-900 mb-2 flex items-center">
+                                <i class="fas fa-align-left text-orange-500 mr-2"></i>
+                                Deskripsi
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed whitespace-pre-line">${product.description}</p>
+                        </div>
+
+                        ${product.business_category ? `
+                        <div class="p-4 bg-blue-50 rounded-xl">
+                            <h4 class="font-bold text-gray-900 mb-2 flex items-center">
+                                <i class="fas fa-briefcase text-blue-500 mr-2"></i>
+                                Kategori Bisnis
+                            </h4>
+                            <p class="text-gray-700">${product.business_category}</p>
+                        </div>
+                        ` : ''}
+
+                        <!-- Contact -->
+                        <div class="p-4 bg-green-50 rounded-xl">
+                            <h4 class="font-bold text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-phone text-green-500 mr-2"></i>
+                                Kontak Penjual
+                            </h4>
+                            <a href="https://wa.me/${product.phone_number.replace(/[^0-9]/g, '')}?text=Halo, saya tertarik dengan produk ${product.name}" 
+                               target="_blank"
+                               class="block w-full py-3 px-4 bg-green-500 hover:bg-green-600 text-white text-center rounded-lg font-semibold transition">
+                                <i class="fab fa-whatsapp mr-2"></i>
+                                Chat via WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Show modal with animation
+        modal.classList.remove('hidden');
+        const modalBox = document.getElementById('modalBox');
+        
+        // Reset position for animation
+        modalBox.style.transform = 'translateY(-100px)';
+        modalBox.style.opacity = '0';
+        
+        // Trigger slide down animation
+        setTimeout(() => {
+            modalBox.style.transform = 'translateY(0)';
+            modalBox.style.opacity = '1';
+        }, 10);
+        
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductModal() {
+        const modal = document.getElementById('productModal');
+        const modalBox = document.getElementById('modalBox');
+        
+        // Slide up animation before close
+        modalBox.style.transform = 'translateY(-100px)';
+        modalBox.style.opacity = '0';
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }, 300);
+    }
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeProductModal();
+        }
+    });
+</script>
+@endpush

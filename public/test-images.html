@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Product Images</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .product { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .product img { max-width: 300px; height: auto; border: 1px solid #ccc; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Test Product Images from Dashboard</h1>
+    
+    <div class="product">
+        <h3>Product: Geprek</h3>
+        <p><strong>Image URL:</strong> https://res.cloudinary.com/dvnq9wkzr/image/upload/v1763453047/ekraf/products/ubfajw6m7dkfgeapqibq.jpg</p>
+        <img src="https://res.cloudinary.com/dvnq9wkzr/image/upload/v1763453047/ekraf/products/ubfajw6m7dkfgeapqibq.jpg" 
+             alt="Geprek"
+             onerror="this.nextElementSibling.style.display='block'; this.style.display='none';">
+        <p class="error" style="display:none;">❌ Failed to load image</p>
+    </div>
+
+    <div class="product">
+        <h3>Product: Ayam Bakar</h3>
+        <p><strong>Image URL:</strong> https://res.cloudinary.com/dvnq9wkzr/image/upload/v1763453186/ekraf/products/njjbevintqzukg3yv6wn.jpg</p>
+        <img src="https://res.cloudinary.com/dvnq9wkzr/image/upload/v1763453186/ekraf/products/njjbevintqzukg3yv6wn.jpg" 
+             alt="Ayam Bakar"
+             onerror="this.nextElementSibling.style.display='block'; this.style.display='none';">
+        <p class="error" style="display:none;">❌ Failed to load image</p>
+    </div>
+
+    <div class="product">
+        <h3>Product: Cocholatos</h3>
+        <p><strong>Image URL:</strong> https://res.cloudinary.com/dvnq9wkzr/image/upload/v1763551732/ekraf/products/advrg4yasbstvftkphjf.jpg</p>
+        <img src="https://res.cloudinary.com/dvnq9wkzr/image/upload/v1763551732/ekraf/products/advrg4yasbstvftkphjf.jpg" 
+             alt="Cocholatos"
+             onerror="this.nextElementSibling.style.display='block'; this.style.display='none';">
+        <p class="error" style="display:none;">❌ Failed to load image</p>
+    </div>
+
+    <script>
+        console.log('Page loaded. Check if images display correctly.');
+        
+        // Test if images load
+        window.addEventListener('load', function() {
+            const images = document.querySelectorAll('img');
+            images.forEach((img, index) => {
+                if (img.complete && img.naturalHeight !== 0) {
+                    console.log(`Image ${index + 1}: ✓ Loaded successfully`);
+                } else {
+                    console.log(`Image ${index + 1}: ✗ Failed to load`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -3,26 +3,38 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Traits\HasRoleBasedAccess;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\SubSektor;
 use App\Models\BusinessCategory;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Collection;
+use Maatwebsite\Excel\Excel;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Exp;
+use App\Exports\ProdukExport;
+use Filament\Support\Enums\Size;
+use Filament\Tables\Actions\ActionGroup;
 
 class ProductResource extends Resource
 {
+    use HasRoleBasedAccess;
+    
     protected static ?string $model = Product::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-cube';
+    protected static ?string $navigationLabel = 'Produk';
+    protected static ?int $navigationSort = 8;
+    protected static ?string $pluralLabel = 'Produk';
+    protected static ?string $navigationGroup = 'Manajemen Bisnis';
 
-    protected static ?string $navigationLabel = 'Products';
-
-    protected static ?string $pluralLabel = 'Products';
 
     public static function form(Form $form): Form
     {
@@ -35,17 +47,38 @@ class ProductResource extends Resource
                     ->preload()
                     ->required(),
 
-                Forms\Components\Select::make('business_category_id')
-                    ->label('Business Category')
-                    ->relationship('businessCategory', 'name')
+                Forms\Components\Select::make('sub_sektor_id')
+                    ->label('Sub Sector')
+                    ->relationship('subSektor', 'title')
                     ->searchable()
                     ->preload()
+                    ->reactive()
+                    ->afterStateUpdated(fn (Set $set) => $set('business_category_id', null))
                     ->required(),
 
-                Forms\Components\TextInput::make('owner_name')
-                    ->label('Owner Name')
-                    ->required()
-                    ->maxLength(35),
+                Forms\Components\Select::make('business_category_id')
+                    ->label('Business Category')
+                    ->options(function (Get $get): array {
+                        $subSektorId = $get('sub_sektor_id');
+                        
+                        if (!$subSektorId) {
+                            return [];
+                        }
+                        
+                        return \App\Models\BusinessCategory::query()
+                            ->where('sub_sector_id', $subSektorId)
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->searchable()
+                    ->reactive()
+                    ->placeholder(fn (Get $get): string => 
+                        $get('sub_sektor_id') 
+                            ? 'Pilih Business Category' 
+                            : 'Pilih Sub Sector terlebih dahulu'
+                    )
+                    ->helperText('Akan muncul setelah memilih Sub Sector')
+                    ->nullable(),
 
                 Forms\Components\TextInput::make('name')
                     ->label('Product Name')
@@ -76,37 +109,30 @@ class ProductResource extends Resource
                     ->directory('products')
                     ->disk('public')
                     ->visibility('public')
-                    ->maxSize(8192) // 8MB
+                    ->maxSize(8192)
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                     ->imageResizeMode('cover')
                     ->imageCropAspectRatio('1:1')
                     ->imageResizeTargetWidth('500')
                     ->imageResizeTargetHeight('500')
-                    ->required()
-                    ->helperText('Upload gambar produk. Gambar akan diupload ke Cloudinary. Ukuran ideal: 500x500px (1:1). Max: 8MB'),
-
-                Forms\Components\TextInput::make('phone_number')
-                    ->label('Phone Number')
-                    ->tel()
-                    ->maxLength(12)
-                    ->required(),
+                    ->helperText('Upload gambar produk. Ukuran ideal: 500x500px (1:1). Max: 8MB.'),
 
                 Forms\Components\DateTimePicker::make('uploaded_at')
                     ->label('Uploaded At')
                     ->default(now()),
 
                 Forms\Components\Select::make('status')
-                    ->label('Status')
+                    ->label('Status Verifikasi')
                     ->options([
-                        'pending' => 'Pending',
-                        'disetujui' => 'Approved',
-                        'ditolak' => 'Rejected',
-                        'tidak aktif' => 'Inactive',
+                        'pending' => 'Menunggu Verifikasi',
+                        'approved' => 'Disetujui',
+                        'rejected' => 'Ditolak',
+                        'inactive' => 'Tidak Aktif',
                     ])
                     ->default('pending')
-                    ->required(),
+                    ->required()
+                    ->helperText('Status verifikasi produk oleh admin'),
 
-                // Relasi dengan Katalogs
                 Forms\Components\Select::make('katalogs')
                     ->label('Featured in Catalogs')
                     ->multiple()
@@ -123,26 +149,37 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('User')
+                    ->label('ID Produk')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color('primary')
+                    ->copyable()
+                    ->copyMessage('ID disalin!')
+                    ->copyMessageDuration(1500),
 
-                Tables\Columns\TextColumn::make('owner_name')
-                    ->label('Owner')
-                    ->searchable(),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Image')
+                    ->circular()
+                    ->defaultImageUrl(fn () => asset('images/default-product.png')),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Product Name')
                     ->searchable()
-                    ->limit(30),
+                    ->limit(30)
+                    ->weight('bold'),
 
-                Tables\Columns\TextColumn::make('businessCategory.name')
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Owner')
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color('info'),
+
+                Tables\Columns\TextColumn::make('subSektor.title')
                     ->label('Category')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('price')
                     ->label('Price')
@@ -151,46 +188,166 @@ class ProductResource extends Resource
 
                 Tables\Columns\TextColumn::make('stock')
                     ->label('Stock')
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color(fn ($state) => $state > 0 ? 'success' : 'danger'),
 
-                Tables\Columns\ImageColumn::make('image_url')
-                    ->label('Image')
-                    ->square(),
-
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
                     ->label('Status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'disetujui',
-                        'danger' => 'ditolak',
-                        'secondary' => 'tidak aktif',
-                    ]),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'approved' => 'success',
+                        'pending' => 'warning',
+                        'rejected' => 'danger',
+                        'inactive' => 'gray',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'approved' => 'Disetujui',
+                        'pending' => 'Menunggu',
+                        'rejected' => 'Ditolak',
+                        'inactive' => 'Tidak Aktif',
+                        default => $state,
+                    }),
 
                 Tables\Columns\TextColumn::make('uploaded_at')
                     ->label('Uploaded')
-                    ->dateTime()
+                    ->dateTime('d M Y, H:i')
                     ->sortable(),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
+                Tables\Filters\Filter::make('id')
+                    ->form([
+                        Forms\Components\TextInput::make('id')
+                            ->label('Cari ID Produk')
+                            ->placeholder('Contoh: PEK001')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['id'],
+                            fn (Builder $query, $id): Builder => $query->where('id', 'like', "%{$id}%")
+                        );
+                    }),
+
                 Tables\Filters\SelectFilter::make('status')
+                    ->label('Status Verifikasi')
                     ->options([
-                        'pending' => 'Pending',
-                        'disetujui' => 'Approved',
-                        'ditolak' => 'Rejected',
-                        'tidak aktif' => 'Inactive',
+                        'pending' => 'Menunggu',
+                        'approved' => 'Disetujui',
+                        'rejected' => 'Ditolak',
+                        'inactive' => 'Tidak Aktif',
                     ]),
 
-                Tables\Filters\SelectFilter::make('business_category_id')
+                Tables\Filters\SelectFilter::make('sub_sektor_id')
                     ->label('Category')
-                    ->relationship('businessCategory', 'name'),
+                    ->relationship('subSektor', 'title'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
+
+                ActionGroup::make([
+                    Tables\Actions\Action::make('approve')
+                        ->label('Setujui')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Setujui Produk')
+                        ->modalDescription('Apakah Anda yakin ingin menyetujui produk ini?')
+                        ->modalSubmitActionLabel('Ya, Setujui')
+                        ->action(function (Product $record) {
+                            $record->update(['status' => 'approved']);
+                            
+                            Notification::make()
+                                ->success()
+                                ->title('Produk Disetujui')
+                                ->body('Produk "' . $record->name . '" telah disetujui.')
+                                ->send();
+                        })
+                        ->visible(fn (Product $record) => $record->status === 'pending'),
+
+                    // TAMBAH ACTION TOLAK
+                    Tables\Actions\Action::make('reject')
+                        ->label('Tolak')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading('Tolak Produk')
+                        ->modalDescription('Apakah Anda yakin ingin menolak produk ini?')
+                        ->modalSubmitActionLabel('Ya, Tolak')
+                        ->action(function (Product $record) {
+                            $record->update(['status' => 'rejected']);
+                            
+                            Notification::make()
+                                ->danger()
+                                ->title('Produk Ditolak')
+                                ->body('Produk "' . $record->name . '" telah ditolak.')
+                                ->send();
+                        })
+                        ->visible(fn (Product $record) => $record->status === 'pending'),
+
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
+                ->label('More actions')
+                ->icon('heroicon-m-ellipsis-vertical')
+                ->color('primary')
+                ->button()
+
             ])
+            
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    // TAMBAH BULK ACTION SETUJUI
+                    Tables\Actions\BulkAction::make('approve_bulk')
+                        ->label('Setujui Terpilih')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Setujui Produk Terpilih')
+                        ->modalDescription('Apakah Anda yakin ingin menyetujui semua produk yang dipilih?')
+                        ->modalSubmitActionLabel('Ya, Setujui Semua')
+                        ->action(function (Collection $records) {
+                            $count = 0;
+                            $records->each(function (Product $record) use (&$count) {
+                                if ($record->status === 'pending') {
+                                    $record->update(['status' => 'approved']);
+                                    $count++;
+                                }
+                            });
+                            
+                            Notification::make()
+                                ->success()
+                                ->title('Produk Disetujui')
+                                ->body($count . ' produk telah disetujui.')
+                                ->send();
+                        }),
+
+                    // TAMBAH BULK ACTION TOLAK
+                    Tables\Actions\BulkAction::make('reject_bulk')
+                        ->label('Tolak Terpilih')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading('Tolak Produk Terpilih')
+                        ->modalDescription('Apakah Anda yakin ingin menolak semua produk yang dipilih?')
+                        ->modalSubmitActionLabel('Ya, Tolak Semua')
+                        ->action(function (Collection $records) {
+                            $count = 0;
+                            $records->each(function (Product $record) use (&$count) {
+                                if ($record->status === 'pending') {
+                                    $record->update(['status' => 'rejected']);
+                                    $count++;
+                                }
+                            });
+                            
+                            Notification::make()
+                                ->danger()
+                                ->title('Produk Ditolak')
+                                ->body($count . ' produk telah ditolak.')
+                                ->send();
+                        }),
+
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
@@ -202,6 +359,8 @@ class ProductResource extends Resource
             //
         ];
     }
+    
+
 
     public static function getPages(): array
     {
@@ -210,5 +369,13 @@ class ProductResource extends Resource
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
+    }
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) \App\Models\Product::count();
+    }
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'warning';
     }
 }

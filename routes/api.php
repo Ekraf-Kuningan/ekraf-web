@@ -96,6 +96,15 @@ Route::prefix('business-category')->group(function () {
     Route::get('/{id}/products', [BusinessCategoryController::class, 'products']);
 });
 
+// Business Categories by Sub Sektor (for form dropdown)
+Route::get('/business-categories/{subSektorId}', function($subSektorId) {
+    $categories = \App\Models\BusinessCategory::where('sub_sector_id', $subSektorId)
+        ->orderBy('name')
+        ->get(['id', 'name']);
+    
+    return response()->json($categories);
+});
+
 // Sync Routes (untuk sinkronisasi dengan backend Next.js)
 Route::prefix('sync')->group(function () {
     Route::get('/status', [SyncController::class, 'syncStatus']);

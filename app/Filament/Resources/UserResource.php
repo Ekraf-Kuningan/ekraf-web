@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
+use App\Filament\Traits\HasRoleBasedAccess;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -16,16 +17,15 @@ use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
+    use HasRoleBasedAccess;
+    
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function canViewAny(): bool
-    {
-        // Hanya superadmin yang bisa mengakses User Resource
-        $user = Auth::user();
-        return $user && $user->level_id === 1;
-    }
+    protected static ?string $navigationGroup = 'Manajemen User';
+    protected static ?string $navigationLabel = 'User';
+    protected static ?string $pluralLabel = 'User';
+    protected static ?int $navigationSort = 9;
 
     public static function form(Form $form): Form
     {
@@ -71,6 +71,13 @@ class UserResource extends Resource
                             ->dehydrated(fn (?string $state): bool => filled($state))
                             ->maxLength(255),
                             
+                        Forms\Components\Select::make('level_id')
+                            ->label('Level User')
+                            ->relationship('level', 'name')
+                            ->required()
+                            ->default(3)
+                            ->helperText('Pilih role user: Super Admin, Admin, atau Mitra'),
+                            
                         Forms\Components\Select::make('gender')
                             ->options([
                                 'male' => 'Male',
@@ -84,27 +91,35 @@ class UserResource extends Resource
                             ->nullable(),
                     ])
                     ->columns(2),
-                    
+                
                 Forms\Components\Section::make('Business Information')
                     ->schema([
-                        Forms\Components\TextInput::make('business_name')
-                            ->maxLength(100)
+                        Forms\Components\TextInput::make('nik')
+                            ->label('NIK (Nomor Induk Kependudukan)')
+                            ->mask('9999999999999999')
+                            ->length(16)
+                            ->placeholder('1234567890123456')
+                            ->helperText('16 digit NIK sesuai KTP')
                             ->nullable(),
                             
-                        Forms\Components\Select::make('business_status')
-                            ->options([
-                                'individual' => 'Individual',
-                                'company' => 'Company',
-                                'partnership' => 'Partnership'
-                            ])
+                        Forms\Components\TextInput::make('nib')
+                            ->label('NIB (Nomor Izin Berusaha)')
+                            ->mask('9999999999999')
+                            ->length(13)
+                            ->placeholder('1234567890123')
+                            ->helperText('13 digit NIB dari OSS')
                             ->nullable(),
                             
-                        Forms\Components\Select::make('level_id')
-                            ->relationship('level', 'name')
-                            ->required()
-                            ->preload(),
+                        Forms\Components\Textarea::make('alamat')
+                            ->label('Alamat Lengkap')
+                            ->rows(3)
+                            ->maxLength(500)
+                            ->placeholder('Masukkan alamat lengkap')
+                            ->columnSpanFull()
+                            ->nullable(),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->collapsible(),
             ]);
     }
 
@@ -125,20 +140,43 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('level.name')
                     ->label('Level')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('business_name')
+                    ->sortable()
+                    ->default('-'),
+                Tables\Columns\TextColumn::make('mitra.business_name')
+                    ->label('Business Name')
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->default('-'),
                 Tables\Columns\TextColumn::make('phone_number')
                     ->searchable()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('nik')
+                    ->label('NIK')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->default('-'),
+                Tables\Columns\TextColumn::make('nib')
+                    ->label('NIB')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->default('-'),
+                Tables\Columns\TextColumn::make('alamat')
+                    ->label('Alamat')
+                    ->limit(50)
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->default('-'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('level_id')
+                    ->label('Filter by Level')
+                    ->relationship('level', 'name')
+                    ->multiple()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -153,7 +191,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\MitraRelationManager::class,
         ];
     }
 

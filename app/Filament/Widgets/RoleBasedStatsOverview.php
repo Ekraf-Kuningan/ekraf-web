@@ -35,10 +35,18 @@ class RoleBasedStatsOverview extends BaseWidget
                     ->color('info')
                     ->chart([2, 5, 3, 8, 6, 12, 9]),
 
-                Stat::make('Produk Disetujui', Product::where('status', 'disetujui')->count())
+                Stat::make('Produk Disetujui', Product::where('status', 'approved')->count())
                     ->description('Produk yang telah disetujui')
                     ->descriptionIcon('heroicon-m-check-circle')
                     ->color('success'),
+                Stat::make('Produk Pending', Product::where('status', 'pending')->count())
+                    ->description('Menunggu persetujuan')
+                    ->descriptionIcon('heroicon-m-clock')
+                    ->color('warning'),
+                Stat::make('Produk Ditolak', Product::where('status', 'rejected')->count())
+                    ->description('Produk yang ditolak')
+                    ->descriptionIcon('heroicon-m-x-circle')
+                    ->color('danger'),
 
                 Stat::make('Total Artikel', Artikel::count())
                     ->description('Artikel publikasi')
@@ -46,13 +54,13 @@ class RoleBasedStatsOverview extends BaseWidget
                     ->color('warning')
                     ->chart([3, 7, 5, 11, 8, 14, 10]),
 
-                Stat::make('Total Pengguna', User::count())
-                    ->description('Pengguna terdaftar')
+                Stat::make('Total Mitra', User::where('level_id', 3)->count())
+                    ->description('Mitra terdaftar')
                     ->descriptionIcon('heroicon-m-users')
                     ->color('primary'),
 
                 Stat::make('Admin & SuperAdmin', User::whereIn('level_id', [1, 2])->count())
-                    ->description('Pengguna dengan akses admin')
+                    ->description('User dengan akses admin')
                     ->descriptionIcon('heroicon-m-shield-check')
                     ->color('danger'),
             ];

@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         // Seed Sub Sektor Ekonomi Kreatif
         $this->call([
             SubSektorSeeder::class,
+            KatalogSeeder::class,
         ]);
     }
 }

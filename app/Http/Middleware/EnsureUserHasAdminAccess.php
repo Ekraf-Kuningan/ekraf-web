@@ -21,8 +21,9 @@ class EnsureUserHasAdminAccess
             return redirect()->route('login');
         }
 
-        // Check if user has admin access (level 1 or 2)
-        if (!in_array(Auth::user()->level_id, [1, 2])) {
+        // Check if user has admin access (via mitra level 1 or 2)
+        $user = Auth::user();
+        if (!$user->hasAdminAccess()) {
             Auth::logout();
             return redirect()->route('login')->withErrors(['email' => 'Akun Anda tidak terdaftar.']);
         }

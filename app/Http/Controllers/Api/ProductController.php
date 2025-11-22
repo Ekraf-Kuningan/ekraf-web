@@ -82,12 +82,12 @@ class ProductController extends Controller
     }
 
     /**
-     * Get products by business category
+     * Get products by sub sektor
      */
-    public function byCategory($categoryId)
+    public function bySubSektor($subSektorId)
     {
-        $products = Product::with(['user', 'businessCategory'])
-            ->where('business_category_id', $categoryId)
+        $products = Product::with(['user', 'subSektor'])
+            ->where('sub_sektor_id', $subSektorId)
             ->where('status', 'approved')
             ->orderBy('uploaded_at', 'desc')
             ->get();
@@ -104,7 +104,7 @@ class ProductController extends Controller
      */
     public function approved()
     {
-        $products = Product::with(['user', 'businessCategory'])
+        $products = Product::with(['user', 'subSektor'])
             ->where('status', 'approved')
             ->orderBy('uploaded_at', 'desc')
             ->get();

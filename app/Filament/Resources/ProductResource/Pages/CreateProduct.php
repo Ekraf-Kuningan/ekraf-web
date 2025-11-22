@@ -11,9 +11,15 @@ class CreateProduct extends CreateRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = ProductResource::class;
+    protected static ?string $title = 'Tambah Produk';
+    protected static ?string $breadcrumb = 'Tambah Produk';
     
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         return $this->handleProductImageUpload($data);
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

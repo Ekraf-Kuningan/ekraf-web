@@ -55,7 +55,7 @@ class ProductObserver
             $productData = [
                 'id' => $product->id,
                 'user_id' => $product->user_id,
-                'business_category_id' => $product->business_category_id,
+                'sub_sektor_id' => $product->sub_sektor_id,
                 'owner_name' => $product->owner_name,
                 'name' => $product->name,
                 'description' => $product->description,

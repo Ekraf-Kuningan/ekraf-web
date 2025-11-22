@@ -13,7 +13,10 @@ class ListArtikelKategoris extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Tambah Kategori Artikel')
+                ->icon('heroicon-o-plus-circle')
+                ->color('warning'),
         ];
     }
 }

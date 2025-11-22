@@ -19,4 +19,24 @@ class SubSektor extends Model
     {
         return $this->hasMany(Katalog::class, 'sub_sector_id');
     }
+
+    public function katalogs()
+    {
+        return $this->hasMany(Katalog::class, 'sub_sector_id');
+    }
+
+    public function businessCategories()
+    {
+        return $this->hasMany(BusinessCategory::class, 'sub_sector_id');
+    }
+
+    public function mitras()
+    {
+        return $this->hasMany(Mitra::class, 'sub_sektor_id');
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'sub_sektor_id');
+    }
 }

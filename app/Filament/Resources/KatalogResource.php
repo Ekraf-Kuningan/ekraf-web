@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\KatalogResource\Pages;
+use App\Filament\Traits\HasRoleBasedAccess;
 use App\Models\Katalog;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,9 +15,15 @@ use Illuminate\Support\Str;
 
 class KatalogResource extends Resource
 {
+    use HasRoleBasedAccess;
+    
     protected static ?string $model = Katalog::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationLabel = 'Katalog';
+    protected static ?string $navigationGroup = 'Manajemen Konten';
+    protected static ?string $pluralLabel = 'Katalog';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -34,8 +41,23 @@ class KatalogResource extends Resource
                 Forms\Components\TextInput::make('slug')
                     ->readOnly(),
 
+                // Relasi dengan Products (dipindah ke atas agar user pilih produk dulu)
+                Forms\Components\Select::make('products')
+                    ->label('Pilih Produk')
+                    ->multiple()
+                    ->relationship('products', 'name', function ($query) {
+                        return $query->where('status', 'approved')->with('user');
+                    })
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name . ' - ' . $record->user->name)
+                    ->searchable(['name'])
+                    ->preload()
+                    ->required()
+                    ->helperText('Pilih produk yang akan ditampilkan di katalog ini. Gambar produk pertama akan digunakan sebagai gambar katalog jika tidak upload gambar.')
+                    ->columnSpanFull()
+                    ->live(),
+
                 Forms\Components\FileUpload::make('image')
-                    ->label('Product Image')
+                    ->label('Gambar Katalog (Opsional)')
                     ->image()
                     ->directory('katalogs')
                     ->disk('public')
@@ -46,9 +68,8 @@ class KatalogResource extends Resource
                     ->imageCropAspectRatio('4:3')
                     ->imageResizeTargetWidth('800')
                     ->imageResizeTargetHeight('600')
-                    ->required()
                     ->columnSpanFull()
-                    ->helperText('Upload gambar katalog. Gambar akan diupload ke Cloudinary. Ukuran ideal: 800x600px (4:3). Max: 8MB'),
+                    ->helperText('Upload gambar katalog khusus. Jika tidak diisi, akan menggunakan gambar dari produk pertama yang dipilih. Ukuran ideal: 800x600px (4:3). Max: 8MB'),
 
                 Forms\Components\RichEditor::make('content')
                     ->label('Deskripsi Katalog')
@@ -56,27 +77,27 @@ class KatalogResource extends Resource
                     ->columnSpanFull(),
 
                 // Informasi Kontak
-                Forms\Components\Section::make('Informasi Kontak')
-                    ->schema([
-                        Forms\Components\TextInput::make('contact')
-                            ->label('Kontak')
-                            ->maxLength(255)
-                            ->placeholder('Nama kontak atau person in charge'),
+                // Forms\Components\Section::make('Informasi Kontak')
+                //     ->schema([
+                //         Forms\Components\TextInput::make('contact')
+                //             ->label('Kontak')
+                //             ->maxLength(255)
+                //             ->placeholder('Nama kontak atau person in charge'),
                         
-                        Forms\Components\TextInput::make('phone_number')
-                            ->label('Nomor Telepon/WhatsApp')
-                            ->tel()
-                            ->maxLength(20)
-                            ->placeholder('081234567890'),
+                //         Forms\Components\TextInput::make('phone_number')
+                //             ->label('Nomor Telepon/WhatsApp')
+                //             ->tel()
+                //             ->maxLength(20)
+                //             ->placeholder('081234567890'),
                         
-                        Forms\Components\TextInput::make('email')
-                            ->label('Email')
-                            ->email()
-                            ->maxLength(255)
-                            ->placeholder('email@example.com'),
-                    ])->columns(2),
+                //         Forms\Components\TextInput::make('email')
+                //             ->label('Email')
+                //             ->email()
+                //             ->maxLength(255)
+                //             ->placeholder('email@example.com'),
+                //     ])->columns(2),
 
-                // Media Sosial & Toko Online
+                // // Media Sosial & Toko Online
                 Forms\Components\Section::make('Media Sosial & Toko Online')
                     ->schema([
                         Forms\Components\TextInput::make('instagram')
@@ -107,16 +128,6 @@ class KatalogResource extends Resource
                             ->placeholder('https://lazada.co.id/shop/shop-name')
                             ->prefixIcon('heroicon-o-globe-alt'),
                     ])->columns(2),
-
-                // Relasi dengan Products
-                Forms\Components\Select::make('products')
-                    ->label('Related Products')
-                    ->multiple()
-                    ->relationship('products', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->helperText('Pilih produk yang akan ditampilkan di katalog ini.')
-                    ->columnSpanFull(),
 
                 // Fields lama disembunyikan tapi tetap ada untuk backward compatibility
                 Forms\Components\Hidden::make('product_name')

@@ -552,4 +552,17 @@
         </div>
     </section>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Track view saat halaman dimuat
+        
+        fetch(`/products/${productId}/track-view`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
+    });
+    </script>
 @endsection

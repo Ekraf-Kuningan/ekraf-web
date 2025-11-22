@@ -23,27 +23,40 @@ class CustomLoginController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'string'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        // Cek apakah input adalah email atau username
+        $fieldType = filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        
+        if (Auth::attempt([$fieldType => $request->email, 'password' => $request->password], $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            // Check if user has admin access (level 1 or 2)
-            if (in_array(Auth::user()->level_id, [1, 2])) {
-                return redirect()->intended(route('filament.admin.pages.dashboard'));
+            if($request->has('remember')){
+                // Set cookie untuk 5 hari
+                setcookie('remember_email', $request->email, time() + (5 * 24 * 60 * 60), "/");
             } else {
-                // If user doesn't have admin access, logout and redirect back
-                Auth::logout();
-                throw ValidationException::withMessages([
-                    'email' => 'Akun Anda tidak terdaftar',
-                ]);
+                // Hapus cookie jika ada
+                if(isset($_COOKIE['remember_email'])) {
+                    setcookie('remember_email', '', time() - 3600, "/");
+                }
             }
+            
+
+            $user = Auth::user();   
+
+            // Admin (level 1/2) -> Filament, Mitra (level 3) -> Dashboard Mitra
+            if ($user->level_id == 1 || $user->level_id == 2) {
+                return redirect()->intended(route('filament.admin.pages.dashboard'));
+            }
+
+            // Default arahkan ke dashboard mitra
+            return redirect()->intended(route('mitra.dashboard'));
         }
 
         throw ValidationException::withMessages([
-            'email' => 'Email atau password yang Anda masukkan salah.',
+            'email' => 'Email/Username atau password yang Anda masukkan salah.',
         ]);
     }
 

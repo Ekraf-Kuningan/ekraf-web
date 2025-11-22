@@ -63,7 +63,7 @@ class PendingProductsWidget extends BaseWidget
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->action(function (Product $record) {
-                        $record->update(['status' => 'disetujui']);
+                        $record->update(['status' => 'approved']);
                         $this->resetTable();
                     })
                     ->requiresConfirmation(),
@@ -72,7 +72,7 @@ class PendingProductsWidget extends BaseWidget
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
                     ->action(function (Product $record) {
-                        $record->update(['status' => 'ditolak']);
+                        $record->update(['status' => 'rejected']);
                         $this->resetTable();
                     })
                     ->requiresConfirmation(),

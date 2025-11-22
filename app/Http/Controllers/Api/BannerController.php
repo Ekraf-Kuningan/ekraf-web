@@ -25,7 +25,7 @@ class BannerController extends Controller
             $query->active();
         }
 
-        $banners = $query->orderBy('sort_order')->get();
+        $banners = $query->orderBy('banners.sort_order', 'asc')->get();
 
         return response()->json([
             'success' => true,
@@ -62,7 +62,7 @@ class BannerController extends Controller
     {
         $banners = Banner::with(['artikel'])
             ->active()
-            ->orderBy('sort_order')
+            ->orderBy('banners.sort_order', 'asc')
             ->get();
 
         return response()->json([

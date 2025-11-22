@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Artikel;
 use App\Models\Author;
+use App\Models\ProductView;
 use App\Models\Banner;
 use App\Models\Katalog;
 use App\Models\SubSektor;
@@ -16,6 +17,8 @@ class LandingController extends Controller
         $katalogs = Katalog::with(['subSektor', 'products' => function($query) {
             $query->where('status', 'disetujui');
         }])->withCount('products')->latest()->take(6)->get();
+
+       
             
         $featureds = Artikel::where('is_featured', true)->get();
         $artikels = Artikel::orderBy('created_at', 'desc')->get()->take(4);

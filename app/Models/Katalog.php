@@ -24,7 +24,6 @@ class Katalog extends Model
         'product_name',
         'price',      
         'content',
-        'contact',
         'phone_number',      
         'email',
         'instagram',  
@@ -54,7 +53,39 @@ class Katalog extends Model
         return $this->belongsToMany(Product::class, 'catalog_product', 'catalog_id', 'product_id')
                     ->withTimestamps()
                     ->withPivot(['sort_order', 'is_featured'])
-                    ->orderBy('sort_order');
+                    ->orderByPivot('sort_order', 'asc');
+    }
+
+    /**
+     * Relationship to KatalogView (tracking)
+     */
+    public function views()
+    {
+        return $this->hasMany(KatalogView::class);
+    }
+
+    /**
+     * Get total view count for this katalog
+     */
+    public function getViewCountAttribute()
+    {
+        return $this->views()->count();
+    }
+
+    /**
+     * Get recent views (last 30 days)
+     */
+    public function getRecentViewsAttribute()
+    {
+        return $this->views()->where('viewed_at', '>', now()->subDays(30))->count();
+    }
+
+    /**
+     * Get today's views
+     */
+    public function getTodayViewsAttribute()
+    {
+        return $this->views()->whereDate('viewed_at', today())->count();
     }
 
     /**
@@ -88,7 +119,20 @@ class Katalog extends Model
             return asset('storage/' . $this->image);
         }
 
-        // 5. Final fallback to placeholder
+        // 5. NEW FALLBACK: Use first product's image if no catalog image exists
+        $firstProduct = $this->products()->first();
+        if ($firstProduct && !empty($firstProduct->image)) {
+            // Check if product image is a URL
+            if (str_starts_with($firstProduct->image, 'http://') || str_starts_with($firstProduct->image, 'https://')) {
+                return $firstProduct->image;
+            }
+            // Check if product image exists in storage
+            if (file_exists(public_path('storage/' . $firstProduct->image))) {
+                return asset('storage/' . $firstProduct->image);
+            }
+        }
+
+        // 6. Final fallback to placeholder
         return asset('assets/img/placeholder-catalog.svg');
     }
 
@@ -112,6 +156,17 @@ class Katalog extends Model
             }
         }
 
+        // Fallback to first product's image
+        $firstProduct = $this->products()->first();
+        if ($firstProduct && !empty($firstProduct->image)) {
+            if (str_starts_with($firstProduct->image, 'http://') || str_starts_with($firstProduct->image, 'https://')) {
+                return $firstProduct->image;
+            }
+            if (file_exists(public_path('storage/' . $firstProduct->image))) {
+                return asset('storage/' . $firstProduct->image);
+            }
+        }
+
         return $this->image_url;
     }
 
@@ -131,6 +186,12 @@ class Katalog extends Model
         
         if (!empty($this->image) && file_exists(public_path('storage/' . $this->image))) {
             return 'Local Storage';
+        }
+
+        // Check if using product image
+        $firstProduct = $this->products()->first();
+        if ($firstProduct && !empty($firstProduct->image)) {
+            return 'Product Image (Auto)';
         }
         
         return 'Default Fallback';

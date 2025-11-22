@@ -43,7 +43,9 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             @forelse($katalogs as $katalog)
-                <a href="{{ route('katalog.show', $katalog->slug) }}" class="block">
+                <a href="{{ route('katalog.show', $katalog->slug) }}" 
+                   class="block"
+                   onclick="trackKatalogView('{{ $katalog->slug }}', event)">
                     <div class="catalog-card">
                         <!-- Image Container -->
                         <div class="catalog-card-image">
@@ -105,3 +107,30 @@
     </div>
     {{-- Yuk beres  yuk--}}
 @endsection
+
+@push('scripts')
+<script>
+    function trackKatalogView(slug, event) {
+        // Don't prevent default - allow navigation to continue
+        console.log('Tracking katalog view:', slug);
+        
+        // Send tracking request asynchronously
+        fetch(`/katalog/${slug}/track-view`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Tracking success:', data);
+        })
+        .catch(error => {
+            // Log error but don't interrupt user navigation
+            console.error('Tracking error:', error);
+        });
+    }
+</script>
+@endpush

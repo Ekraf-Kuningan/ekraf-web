@@ -91,8 +91,7 @@ class KatalogController extends Controller
         }
 
         $products = $katalog->products()
-            ->where('status', 'approved')
-            ->orderBy('sort_order')
+            ->where('products.status', 'disetujui')
             ->get();
 
         return response()->json([

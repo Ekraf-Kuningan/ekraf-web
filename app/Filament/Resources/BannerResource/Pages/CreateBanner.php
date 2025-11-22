@@ -12,6 +12,8 @@ class CreateBanner extends CreateRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = BannerResource::class;
+    protected static ?string $title = 'Tambah Banner';
+    protected static ?string $breadcrumb = 'Tambah Banner'; 
     
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -24,5 +26,9 @@ class CreateBanner extends CreateRecord
             1200,
             675
         );
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

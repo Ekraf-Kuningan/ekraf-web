@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BannerResource\Pages;
 use App\Filament\Resources\BannerResource\RelationManagers;
+use App\Filament\Traits\HasRoleBasedAccess;
 use App\Models\Banner;
 use App\Models\Artikel;
 use Filament\Forms;
@@ -16,9 +17,15 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BannerResource extends Resource
 {
+    use HasRoleBasedAccess;
+    
     protected static ?string $model = Banner::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-photo';
+    protected static ?string $navigationLabel = 'Banner';
+    protected static ?string $navigationGroup = 'Manajemen Konten';
+    protected static ?string $pluralLabel = 'Banner';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

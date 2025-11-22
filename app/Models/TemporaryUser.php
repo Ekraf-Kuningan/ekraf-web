@@ -3,36 +3,58 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class TemporaryUser extends Model
-{
-    protected $table = 'tbl_user_temp';
-    protected $primaryKey = 'id';
+{   
+
+    protected $table = 'temporary_users';
     public $timestamps = false;
-    
     protected $fillable = [
-        'nama_user',
+        'name',
         'username',
         'email',
         'password',
-        'jk',
-        'nohp',
-        'id_level',
+        'gender',
+        'phone_number',
+        'nik',
+        'nib',
+        'alamat',
+        'image',
+        'cloudinary_id',
+        'cloudinary_meta',
         'verificationToken',
-        'createdAt'
+        'resetPasswordToken',
+        'resetPasswordTokenExpiry',
+        'verificationTokenExpiry',
+        'business_name',
+        'business_status',
+        'level_id',
+        'sub_sektor_id',
+        'createdAt',
     ];
 
-    protected $hidden = [
-        'password',
-    ];
-
+    // Cast tipe data
     protected $casts = [
+        'resetPasswordTokenExpiry' => 'datetime',
+        'verificationTokenExpiry' => 'datetime',
         'createdAt' => 'datetime',
-        'password' => 'hashed',
+        'cloudinary_meta' => 'array',
     ];
 
-    public function level()
+    public static function generateVerificationToken()
     {
-        return $this->belongsTo(Level::class, 'id_level', 'id_level');
+        return Str::random(64);
+    }
+
+    public function isTokenExpired()
+    {
+        return $this->verificationTokenExpiry && Carbon::now()->greaterThan($this->verificationTokenExpiry);
+    }
+
+    public function businessCategory()
+    {
+        return $this->belongsTo(BusinessCategory::class, 'business_category_id');
     }
 }

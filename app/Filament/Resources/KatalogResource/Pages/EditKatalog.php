@@ -12,11 +12,15 @@ class EditKatalog extends EditRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = KatalogResource::class;
+    protected static ?string $title = 'Edit Katalog';
+    protected static ?string $breadcrumb = 'Edit Katalog';
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Hapus Katalog')
+                ->color('danger'),
         ];
     }
     
@@ -44,5 +48,9 @@ class EditKatalog extends EditRecord
             600,
             $oldCloudinaryId
         );
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

@@ -32,7 +32,7 @@
                     <div class="w-16 h-16 bg-white/20 rounded-full mx-auto mb-4 flex items-center justify-center">
                         <i class="fas fa-lock text-white text-2xl"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-white">Selamat Datang</h2>
+                    <h2 class="text-xl font-bold text-white">Selamat Datang di Ekraf Kuningan</h2>
                 </div>
 
                 <!-- Form Content -->
@@ -90,7 +90,7 @@
 
                         <!-- Remember Me -->
                         <div class="flex items-center">
-                            <input id="remember" type="checkbox" name="remember" class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2">
+                            <input id="remember" type="checkbox" name="remember" {{ Cookie::get('remember_email') ? 'checked' : '' }} class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2">
                             <label for="remember" class="ml-3 text-sm font-medium text-gray-600">
                                 Ingat saya di perangkat ini
                             </label>
@@ -108,6 +108,13 @@
                                     Memproses...
                                 </span>
                             </button>
+                        </div>
+                        
+                        <!-- Forgot Password -->
+                        <div class="mt-3 text-center">
+                            <a href="{{ route('password.request') }}" class="text-sm text-orange-600 hover:text-orange-700 font-medium">
+                                Lupa kata sandi?
+                            </a>
                         </div>
                     </form>
 
@@ -161,6 +168,16 @@
                 setTimeout(() => emailInput.focus(), 100);
             }
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const rememberCheckbox = document.getElementById('remember');
+        const emailInput = document.getElementById('email');
+        
+        // If email is already filled from cookie, focus on password
+        if (emailInput.value && rememberCheckbox.checked) {
+            document.getElementById('password').focus();
+        }
+    });
     </script>
 </body>
 </html>

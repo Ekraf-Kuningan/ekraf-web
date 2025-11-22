@@ -12,6 +12,8 @@ class CreateUser extends CreateRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = UserResource::class;
+    protected static ?string $title = 'Tambah User';
+    protected static ?string $breadcrumb = 'Tambah User';
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -24,5 +26,9 @@ class CreateUser extends CreateRecord
             200,
             200
         );
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

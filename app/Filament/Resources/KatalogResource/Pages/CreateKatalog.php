@@ -12,6 +12,8 @@ class CreateKatalog extends CreateRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = KatalogResource::class;
+    protected static ?string $title = 'Tambah Katalog';
+    protected static ?string $breadcrumb = 'Tambah Katalog';
     
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -24,5 +26,9 @@ class CreateKatalog extends CreateRecord
             800,
             600
         );
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

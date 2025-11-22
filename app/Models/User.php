@@ -25,13 +25,13 @@ class User extends Authenticatable
         'username',
         'gender',
         'phone_number',
+        'nik',
+        'nib',
+        'alamat',
+        'level_id',
         'image',
         'cloudinary_id',
         'cloudinary_meta',
-        'business_name',
-        'business_status',
-        'level_id',
-        'business_category_id',
         'resetPasswordToken',
         'resetPasswordTokenExpiry',
         'verifiedAt'
@@ -60,9 +60,8 @@ class User extends Authenticatable
             'password' => 'hashed',
             'resetPasswordTokenExpiry' => 'datetime',
             'verifiedAt' => 'datetime',
-            'level_id' => 'integer',
-            'business_category_id' => 'integer',
             'cloudinary_meta' => 'array',
+            'level_id' => 'integer',
         ];
     }
 
@@ -71,15 +70,15 @@ class User extends Authenticatable
      */
     public function level()
     {
-        return $this->belongsTo(Level::class, 'level_id');
+        return $this->belongsTo(Level::class);
     }
 
     /**
-     * Get the business category that owns the user.
+     * Get the sub sektor through mitra.
      */
-    public function businessCategory()
+    public function subSektor()
     {
-        return $this->belongsTo(BusinessCategory::class, 'business_category_id');
+        return $this->hasOneThrough(SubSektor::class, Mitra::class, 'user_id', 'id', 'id', 'sub_sektor_id');
     }
 
     /**
@@ -88,6 +87,14 @@ class User extends Authenticatable
     public function products()
     {
         return $this->hasMany(Product::class, 'user_id');
+    }
+
+    /**
+     * Get the mitra record associated with the user (business details).
+     */
+    public function mitra()
+    {
+        return $this->hasOne(Mitra::class, 'user_id');
     }
 
     /**

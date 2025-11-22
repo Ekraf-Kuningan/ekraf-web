@@ -10,10 +10,12 @@ use App\Models\Author;
 use App\Models\Artikel;
 use App\Models\Product;
 use App\Models\Katalog;
+use App\Models\Mitra;
 use App\Observers\AuthorObserver;
 use App\Observers\ArtikelObserver;
 use App\Observers\ProductObserver;
 use App\Observers\KatalogObserver;
+use App\Observers\MitraObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         Artikel::observe(ArtikelObserver::class);
         Product::observe(ProductObserver::class);
         Katalog::observe(KatalogObserver::class);
+        Mitra::observe(MitraObserver::class);
         
         // Configure API rate limiters
         RateLimiter::for('api', function (Request $request) {

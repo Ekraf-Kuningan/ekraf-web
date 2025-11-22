@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SubSektorResource\Pages;
 use App\Filament\Resources\SubSektorResource\RelationManagers;
+use App\Filament\Traits\HasRoleBasedAccess;
 use App\Models\SubSektor;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -17,10 +18,15 @@ use Illuminate\Support\Str;
 
 class SubSektorResource extends Resource
 {
+    use HasRoleBasedAccess;
+    
     protected static ?string $model = SubSektor::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationLabel = 'Sub Sektor';
+    protected static ?string $navigationGroup = 'Manajemen Bisnis';
+    protected static ?string $pluralLabel = 'Sub Sektor';
+    protected static ?int $navigationSort =8;
     public static function form(Form $form): Form
     {
         return $form

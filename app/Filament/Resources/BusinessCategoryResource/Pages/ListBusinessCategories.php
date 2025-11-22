@@ -12,7 +12,10 @@ class ListBusinessCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\CreateAction::make(),
+            \Filament\Actions\CreateAction::make()
+                ->label('Tambah Kategori Bisnis')
+                ->icon('heroicon-o-plus-circle')
+                ->color('warning'),
         ];
     }
 }

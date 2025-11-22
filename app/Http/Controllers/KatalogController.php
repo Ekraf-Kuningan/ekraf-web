@@ -51,7 +51,7 @@ class KatalogController extends Controller
         $katalog = Katalog::with([
             'subSektor', 
             'products' => function($query) {
-                $query->where('status', 'disetujui');
+                $query->where('status', 'approved');
             },
             'products.businessCategory', 
             'products.user'

@@ -12,6 +12,8 @@ class EditBanner extends EditRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = BannerResource::class;
+    protected static ?string $title = 'Edit Banner';
+    protected static ?string $breadcrumb = 'Edit Banner';
 
     protected function getHeaderActions(): array
     {
@@ -44,5 +46,9 @@ class EditBanner extends EditRecord
             675,
             $oldCloudinaryId
         );
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

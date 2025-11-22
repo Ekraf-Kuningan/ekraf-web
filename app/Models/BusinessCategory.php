@@ -10,8 +10,18 @@ class BusinessCategory extends Model
     
     protected $fillable = [
         'name',
+        'sub_sector_id',
+        'description',
         'image'
     ];
+
+    /**
+     * Get the sub sector that owns the business category
+     */
+    public function subSektor()
+    {
+        return $this->belongsTo(SubSektor::class, 'sub_sector_id');
+    }
 
     public function users()
     {

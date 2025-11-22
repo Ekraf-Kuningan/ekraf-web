@@ -53,6 +53,7 @@
         <div id="loading-state" class="hidden text-center py-12">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             <p class="mt-2 text-gray-600">Mencari...</p>
+            
         </div>
 
         <!-- Search Results Container -->

@@ -12,6 +12,8 @@ class EditArtikel extends EditRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = ArtikelResource::class;
+    protected static ?string $title = 'Edit Artikel';
+    protected static ?string $breadcrumb = 'Edit Artikel';
 
     protected function getHeaderActions(): array
     {
@@ -65,5 +67,10 @@ class EditArtikel extends EditRecord
         
         // Handle thumbnail upload using external service (Android-compatible)
         return $this->handleThumbnailUpload($data, $oldCloudinaryId);
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

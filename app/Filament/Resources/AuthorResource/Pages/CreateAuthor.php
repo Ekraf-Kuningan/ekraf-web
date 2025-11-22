@@ -12,6 +12,8 @@ class CreateAuthor extends CreateRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = AuthorResource::class;
+    protected static ?string $title = 'Tambah Author';
+    protected static ?string $breadcrumb = 'Tambah Author';
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -24,5 +26,10 @@ class CreateAuthor extends CreateRecord
             200,
             200
         );
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }
