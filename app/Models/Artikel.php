@@ -25,10 +25,17 @@ class Artikel extends Model
         'thumbnail_meta' => 'array',
         'cloudinary_meta' => 'array',
     ];
+    
+    protected $appends = ['author_name'];
 
     public function author()
     {
         return $this->belongsTo(Author::class);
+    }
+    
+    public function getAuthorNameAttribute()
+    {
+        return $this->author ? $this->author->name : 'Admin';
     }
 
     public function artikelKategori()

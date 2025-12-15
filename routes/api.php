@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BusinessCategoryController;
 use App\Http\Controllers\Api\SyncController;
 use App\Http\Requests\Api\SearchRequest;
+use App\Http\Controllers\Auth\CustomRegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,9 @@ Route::middleware(['throttle:api', 'api.security.headers'])->group(function () {
             'version' => '1.0.0'
         ]);
     })->middleware('throttle:health'); // Use health rate limiter
+
+    // Registration availability check
+    Route::post('/check-availability', [CustomRegisterController::class, 'checkAvailability']);
 
     // Artikel (Berita) Routes
     Route::prefix('artikel')->group(function () {
@@ -139,7 +143,7 @@ Route::get('/search', function (Request $request) {
     $results = [];
     
     if ($type === 'all' || $type === 'artikel') {
-        $articles = \App\Models\Artikel::with(['author', 'artikelKategori'])
+        $articles = \App\Models\Artikel::with(['artikelKategori'])
             ->where('title', 'like', "%{$query}%")
             ->orWhere('content', 'like', "%{$query}%")
             ->limit(10)
@@ -151,7 +155,7 @@ Route::get('/search', function (Request $request) {
         $katalogs = \App\Models\Katalog::with(['subSektor'])
             ->where('title', 'like', "%{$query}%")
             ->orWhere('content', 'like', "%{$query}%")
-            ->orWhere('contact', 'like', "%{$query}%")
+            ->orWhere('product_name', 'like', "%{$query}%")
             ->limit(10)
             ->get();
         $results['katalogs'] = $katalogs;

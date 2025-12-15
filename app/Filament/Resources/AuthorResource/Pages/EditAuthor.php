@@ -12,8 +12,8 @@ class EditAuthor extends EditRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = AuthorResource::class;
-    protected static ?string $title = 'Edit Author';
-    protected static ?string $breadcrumb = 'Edit Author';
+    protected static ?string $title = 'Edit Penulis';
+    protected static ?string $breadcrumb = 'Edit Penulistes';
 
     protected function getHeaderActions(): array
     {

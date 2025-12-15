@@ -18,11 +18,21 @@ use App\Http\Controllers\Mitra\MitraKatalogBrowseController;
 use Illuminate\Support\Str;
 use App\Http\Controllers\ProductViewController;
 use App\Http\Controllers\KatalogViewController;
+use App\Http\Controllers\TestimonialController;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/search', function() {
     return view('pages.search');
 })->name('search');
+Route::get('/manfaat', function() {
+    $testimonials = \App\Models\Testimonial::approved()
+        ->byType('testimoni')
+        ->with('user')
+        ->latest()
+        ->take(6)
+        ->get();
+    return view('pages.manfaat', compact('testimonials'));
+})->name('manfaat');
 Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
 Route::get('/katalog/detail/{slug}', [KatalogController::class, 'show'])->name('katalog.show');
 Route::get('/katalog/subsektor/{subsektor}', [KatalogController::class, 'bySubsektor'])->name('katalog.subsektor');
@@ -31,6 +41,9 @@ Route::get('/kontak', [KontakController::class, 'index'])->name('kontak');
 Route::get('/artikel', [BeritaController::class, 'index'])->name('artikel');
 Route::get('/artikels/{slug}', [ArtikelController::class,'show'])->name('artikels.show');
 
+// Testimonial routes
+Route::post('/testimonial', [TestimonialController::class, 'store'])->name('testimonial.store');
+Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
 
 Route::post('/products/{id}/track-view', [ProductViewController::class, 'track'])->name('products.track-view');
 
@@ -99,10 +112,8 @@ Route::middleware('auth')->prefix('mitra')->name('mitra.')->group(function () {
     Route::get('/katalog-produk', [MitraKatalogBrowseController::class, 'index'])->name('katalog');
     Route::get('/katalog-produk/{id}', [MitraKatalogBrowseController::class, 'show'])->name('katalog.show');
 
-// Katalog Management Routes (only index, create, store, show - no edit/update/delete)
+    // Katalog Management Routes (only index and show - katalog dibuat oleh admin)
     Route::get('/katalog-management', [MitraKatalogController::class, 'index'])->name('katalog-management.index');
-    Route::get('/katalog-management/create', [MitraKatalogController::class, 'create'])->name('katalog-management.create');
-    Route::post('/katalog-management', [MitraKatalogController::class, 'store'])->name('katalog-management.store');
     Route::get('/katalog-management/{id}', [MitraKatalogController::class, 'show'])->name('katalog-management.show');
 
     // Product Management Routes
@@ -119,4 +130,9 @@ Route::middleware('auth')->prefix('mitra')->name('mitra.')->group(function () {
     Route::post('/profile', [MitraProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [MitraProfileController::class, 'updatePassword'])->name('profile.updatePassword');
     Route::delete('/profile/image', [MitraProfileController::class, 'deleteImage'])->name('profile.deleteImage');
+    
+    // Testimonial Routes
+    Route::get('/testimonial', [App\Http\Controllers\Mitra\MitraTestimonialController::class, 'index'])->name('testimonial.index');
+    Route::post('/testimonial', [App\Http\Controllers\Mitra\MitraTestimonialController::class, 'store'])->name('testimonial.store');
+    Route::delete('/testimonial', [App\Http\Controllers\Mitra\MitraTestimonialController::class, 'destroy'])->name('testimonial.destroy');
 });

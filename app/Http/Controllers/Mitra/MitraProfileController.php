@@ -29,8 +29,9 @@ class MitraProfileController extends Controller
     {
         $user = Auth::user();
         $mitra = Mitra::where('user_id', $user->id)->first();
+        $testimonial = \App\Models\Testimonial::where('user_id', $user->id)->first();
 
-        return view('mitra.profile.edit', compact('user', 'mitra'));
+        return view('mitra.profile.edit', compact('user', 'mitra', 'testimonial'));
     }
 
     /**

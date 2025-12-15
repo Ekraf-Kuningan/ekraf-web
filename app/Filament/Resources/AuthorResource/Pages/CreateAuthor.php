@@ -12,8 +12,8 @@ class CreateAuthor extends CreateRecord
     use HandlesCloudinaryUploads;
     
     protected static string $resource = AuthorResource::class;
-    protected static ?string $title = 'Tambah Author';
-    protected static ?string $breadcrumb = 'Tambah Author';
+    protected static ?string $title = 'Tambah Penulis';
+    protected static ?string $breadcrumb = 'Tambah Penulis';
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

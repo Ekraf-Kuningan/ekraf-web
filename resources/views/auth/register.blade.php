@@ -385,6 +385,40 @@
         select {
             display: none;
         }
+
+        /* Availability feedback styles */
+        .availability-feedback {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-wrapper input.border-green-500 {
+            border-color: #10B981 !important;
+            background-color: #F0FDF4 !important;
+        }
+
+        .input-wrapper input.border-red-500 {
+            border-color: #EF4444 !important;
+            background-color: #FEF2F2 !important;
+        }
+
+        .input-wrapper input.border-green-500:focus {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+        }
+
+        .input-wrapper input.border-red-500:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
     </style>
 </head>
 <body class="bg-white min-h-screen">
@@ -892,6 +926,110 @@
                     loadingText.classList.remove('hidden');
                 });
             }
+        });
+
+        // Real-time availability check
+        const fieldsToCheck = {
+            'username': {
+                element: document.getElementById('username'),
+                debounceTimer: null,
+                minLength: 3
+            },
+            'email': {
+                element: document.getElementById('email'),
+                debounceTimer: null,
+                minLength: 5
+            },
+            'name': {
+                element: document.getElementById('name'),
+                debounceTimer: null,
+                minLength: 3
+            },
+            'nik': {
+                element: document.getElementById('nik'),
+                debounceTimer: null,
+                minLength: 16
+            },
+            'nib': {
+                element: document.getElementById('nib'),
+                debounceTimer: null,
+                minLength: 13
+            },
+            'business_name': {
+                element: document.getElementById('business_name'),
+                debounceTimer: null,
+                minLength: 3
+            }
+        };
+
+        // Create feedback elements
+        Object.keys(fieldsToCheck).forEach(fieldName => {
+            const field = fieldsToCheck[fieldName];
+            const wrapper = field.element.closest('.input-wrapper') || field.element.closest('.input-group');
+            
+            // Create feedback div
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.id = `${fieldName}-feedback`;
+            feedbackDiv.className = 'availability-feedback hidden mt-2 text-sm flex items-center gap-2';
+            
+            if (wrapper) {
+                if (field.element.closest('.input-wrapper')) {
+                    wrapper.parentNode.appendChild(feedbackDiv);
+                } else {
+                    wrapper.appendChild(feedbackDiv);
+                }
+            }
+
+            // Add event listener
+            field.element.addEventListener('input', function() {
+                clearTimeout(field.debounceTimer);
+                
+                const value = this.value.trim();
+                const feedbackEl = document.getElementById(`${fieldName}-feedback`);
+                
+                // Remove existing styles
+                this.classList.remove('border-green-500', 'border-red-500');
+                feedbackEl.classList.add('hidden');
+                
+                if (value.length < field.minLength) {
+                    return;
+                }
+
+                // Show loading state
+                feedbackEl.className = 'availability-feedback mt-2 text-sm flex items-center gap-2 text-gray-500';
+                feedbackEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Memeriksa ketersediaan...</span>';
+                
+                field.debounceTimer = setTimeout(async () => {
+                    try {
+                        const response = await fetch('/api/check-availability', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                field: fieldName,
+                                value: value
+                            })
+                        });
+
+                        const data = await response.json();
+                        
+                        if (data.available) {
+                            field.element.classList.add('border-green-500');
+                            feedbackEl.className = 'availability-feedback mt-2 text-sm flex items-center gap-2 text-green-600';
+                            feedbackEl.innerHTML = `<i class="fas fa-check-circle"></i><span>${data.message}</span>`;
+                        } else {
+                            field.element.classList.add('border-red-500');
+                            feedbackEl.className = 'availability-feedback mt-2 text-sm flex items-center gap-2 text-red-600';
+                            feedbackEl.innerHTML = `<i class="fas fa-times-circle"></i><span>${data.message}</span>`;
+                        }
+                    } catch (error) {
+                        console.error('Error checking availability:', error);
+                        feedbackEl.classList.add('hidden');
+                    }
+                }, 500); // 500ms debounce
+            });
         });
     </script>
 

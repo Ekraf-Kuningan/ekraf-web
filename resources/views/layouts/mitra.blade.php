@@ -58,6 +58,9 @@
                             <a href="{{ route('mitra.profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-user mr-2"></i> Profil Saya
                             </a>
+                            <a href="{{ route('mitra.testimonial.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-star mr-2"></i> Testimoni & Saran
+                            </a>
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-cog mr-2"></i> Pengaturan
                             </a>
@@ -139,7 +142,7 @@
             <!-- Profile -->
             <a href="{{ route('mitra.profile.edit') }}" 
                class="flex flex-col items-center justify-center flex-1 h-full {{ request()->routeIs('mitra.profile*') ? 'text-orange-600' : 'text-gray-500' }}">
-                <i class="fas fa-user text-xl mb-1"></i>
+                <x-heroicon-o-user class="w-6 h-6 mb-1" />
                 <span class="text-xs">Profil</span>
             </a>
         </div>
@@ -216,6 +219,17 @@
             
             <div class="pt-2 border-t border-gray-200"></div>
             
+            <!-- Testimoni & Saran Card -->
+            <a href="{{ route('mitra.testimonial.index') }}" 
+               class="block bg-white rounded-lg shadow-sm hover:shadow-md transition p-3 {{ request()->routeIs('mitra.testimonial*') ? 'ring-2 ring-orange-500' : '' }}">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-lg {{ request()->routeIs('mitra.testimonial*') ? 'bg-gradient-to-br from-orange-400 to-orange-500' : 'bg-gray-100' }} flex items-center justify-center">
+                        <x-heroicon-o-chat-bubble-left-right class="w-5 h-5 text-sm {{ request()->routeIs('mitra.testimonial*') ? 'text-white' : 'text-gray-600' }}" />
+                    </div>
+                    <span class="text-sm {{ request()->routeIs('mitra.testimonial*') ? 'text-orange-600 font-medium' : 'text-gray-700' }}">Testimoni & Saran</span>
+                </div>
+            </a>
+            
             <!-- Profile Card -->
             <a href="{{ route('mitra.profile.edit') }}" 
                class="block bg-white rounded-lg shadow-sm hover:shadow-md transition p-3 {{ request()->routeIs('mitra.profile*') ? 'ring-2 ring-orange-500' : '' }}">
@@ -266,7 +280,6 @@
             }
         }
     </style>
-
     @stack('scripts')
 </body>
 </html>

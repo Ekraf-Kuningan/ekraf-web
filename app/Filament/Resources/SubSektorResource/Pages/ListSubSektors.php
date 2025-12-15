@@ -10,6 +10,8 @@ class ListSubSektors extends ListRecords
 {
     protected static string $resource = SubSektorResource::class;
     protected static ?string $title = 'Daftar Sub Sektor';
+    protected static ?string $navigationLabel = 'Daftar Sub Sektor';
+    protected static ?string $breadcrumb = 'Daftar Sub Sektor';
 
     protected function getHeaderActions(): array
     {

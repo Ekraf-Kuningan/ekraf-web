@@ -5,19 +5,12 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-        <div>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                <i class="fas fa-clipboard-list text-orange-500 mr-2"></i>
-                Katalog Saya
-            </h1>
-            <p class="text-gray-600">Kelola katalog produk Anda</p>
-        </div>
-        <a href="{{ route('mitra.katalog-management.create') }}" 
-           class="mt-4 sm:mt-0 inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-orange-700 transition shadow-lg hover:shadow-xl">
-            <i class="fas fa-plus mr-2"></i>
-            Tambah Katalog
-        </a>
+    <div class="mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <i class="fas fa-clipboard-list text-orange-500 mr-2"></i>
+            Katalog Saya
+        </h1>
+        <p class="text-gray-600">Kelola katalog produk Anda</p>
     </div>
 
     <!-- Success Message -->
@@ -88,13 +81,8 @@
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Belum Ada Katalog</h3>
         <p class="text-gray-600 mb-6 max-w-md mx-auto">
-            Buat katalog pertama Anda untuk mengelompokkan produk berdasarkan kategori atau tema tertentu.
+            Katalog Anda akan muncul di sini setelah ditambahkan oleh admin.
         </p>
-        <a href="{{ route('mitra.katalog-management.create') }}" 
-           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:from-orange-600 hover:to-orange-700 transition shadow-lg">
-            <i class="fas fa-plus mr-2"></i>
-            Tambah Katalog Pertama
-        </a>
     </div>
     @endif
 </div>

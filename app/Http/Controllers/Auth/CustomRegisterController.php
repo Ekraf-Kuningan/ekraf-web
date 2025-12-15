@@ -46,32 +46,36 @@ class CustomRegisterController extends Controller
         Log::info('Request data:', $request->all());
         
         $validator = Validator::make($request->all(), [
-            'username' => ['required', 'string', 'max:255', 'unique:users'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'username' => ['required', 'string', 'max:255', 'unique:users', 'unique:temporary_users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'unique:temporary_users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'unique:users', 'unique:temporary_users'],
             'phone_number' => ['required', 'string', 'max:20'],
-            'nik' => ['required', 'string', 'size:16', 'regex:/^[0-9]{16}$/'],
-            'nib' => ['required', 'string', 'size:13', 'regex:/^[0-9]{13}$/'],
+            'nik' => ['required', 'string', 'size:16', 'regex:/^[0-9]{16}$/', 'unique:users,nik', 'unique:temporary_users,nik'],
+            'nib' => ['required', 'string', 'size:13', 'regex:/^[0-9]{13}$/', 'unique:users,nib', 'unique:temporary_users,nib'],
             'alamat' => ['required', 'string', 'max:500'],
             'gender' => ['required', 'in:male,female'],
-            'business_name' => ['required', 'string', 'max:255'],
+            'business_name' => ['required', 'string', 'max:255', 'unique:mitras,business_name', 'unique:temporary_users,business_name'],
             'business_status' => ['required', 'in:new,existing,BARU,SUDAH_LAMA'],
             'sub_sektor_id' => ['required', 'exists:sub_sectors,id'],
             'profile_image' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'], // max 2MB
         ],[
             'username.unique' => 'Username sudah digunakan.',
-            'email.unique' => 'Email Sudah Terdaftar.',
-            'password.min' => 'Password minimal 8 Karakter',
-            'password.confirmed' => 'Konfirmasi Password tidak sesuai.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'name.unique' => 'Nama lengkap sudah terdaftar.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
             'nik.required' => 'NIK wajib diisi.',
             'nik.size' => 'NIK harus 16 digit.',
             'nik.regex' => 'NIK harus berupa angka 16 digit.',
+            'nik.unique' => 'NIK sudah terdaftar.',
             'nib.required' => 'NIB wajib diisi.',
             'nib.size' => 'NIB harus 13 digit.',
             'nib.regex' => 'NIB harus berupa angka 13 digit.',
+            'nib.unique' => 'NIB sudah terdaftar.',
             'alamat.required' => 'Alamat wajib diisi.',
             'alamat.max' => 'Alamat maksimal 500 karakter.',
+            'business_name.unique' => 'Nama usaha sudah terdaftar.',
             'sub_sektor_id.required' => 'Sub sektor harus dipilih.',
             'sub_sektor_id.exists' => 'Sub sektor tidak valid.',
             'profile_image.image' => 'File harus berupa gambar.',
@@ -273,6 +277,85 @@ class CustomRegisterController extends Controller
                 'message' => 'Gagal mengirim email. Silakan coba lagi.'
             ], 500);
         }
+    }
+
+    /**
+     * Check availability of registration fields
+     */
+    public function checkAvailability(Request $request)
+    {
+        $field = $request->input('field');
+        $value = $request->input('value');
+
+        if (!$field || !$value) {
+            return response()->json(['available' => true]);
+        }
+
+        $available = true;
+        $message = '';
+
+        switch ($field) {
+            case 'username':
+                $existsInUsers = User::where('username', $value)->exists();
+                $existsInTemp = TemporaryUser::where('username', $value)->exists();
+                $available = !$existsInUsers && !$existsInTemp;
+                $message = $available ? 'Username tersedia' : 'Username sudah digunakan';
+                break;
+
+            case 'email':
+                $existsInUsers = User::where('email', $value)->exists();
+                $existsInTemp = TemporaryUser::where('email', $value)->exists();
+                $available = !$existsInUsers && !$existsInTemp;
+                $message = $available ? 'Email tersedia' : 'Email sudah terdaftar';
+                break;
+
+            case 'name':
+                $existsInUsers = User::where('name', $value)->exists();
+                $existsInTemp = TemporaryUser::where('name', $value)->exists();
+                $available = !$existsInUsers && !$existsInTemp;
+                $message = $available ? 'Nama lengkap tersedia' : 'Nama lengkap sudah terdaftar';
+                break;
+
+            case 'nik':
+                if (strlen($value) === 16) {
+                    $existsInUsers = User::where('nik', $value)->exists();
+                    $existsInTemp = TemporaryUser::where('nik', $value)->exists();
+                    $available = !$existsInUsers && !$existsInTemp;
+                    $message = $available ? 'NIK tersedia' : 'NIK sudah terdaftar';
+                } else {
+                    $available = false;
+                    $message = 'NIK harus 16 digit';
+                }
+                break;
+
+            case 'nib':
+                if (strlen($value) === 13) {
+                    $existsInUsers = User::where('nib', $value)->exists();
+                    $existsInTemp = TemporaryUser::where('nib', $value)->exists();
+                    $available = !$existsInUsers && !$existsInTemp;
+                    $message = $available ? 'NIB tersedia' : 'NIB sudah terdaftar';
+                } else {
+                    $available = false;
+                    $message = 'NIB harus 13 digit';
+                }
+                break;
+
+            case 'business_name':
+                $existsInMitras = Mitra::where('business_name', $value)->exists();
+                $existsInTemp = TemporaryUser::where('business_name', $value)->exists();
+                $available = !$existsInMitras && !$existsInTemp;
+                $message = $available ? 'Nama usaha tersedia' : 'Nama usaha sudah terdaftar';
+                break;
+
+            default:
+                $available = true;
+                $message = 'Field tidak valid';
+        }
+
+        return response()->json([
+            'available' => $available,
+            'message' => $message
+        ]);
     }
 
        

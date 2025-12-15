@@ -50,6 +50,13 @@
                     </a>
 
                     @auth
+                        <!-- Dashboard Button -->
+                        <a href="@if(auth()->user()->level_id == 3){{ route('mitra.dashboard') }}@else{{ route('filament.admin.pages.dashboard') }}@endif" 
+                           class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full hover:shadow-lg hover:scale-105 transform transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-th-large"></i>
+                            <span>DASHBOARD</span>
+                        </a>
+
                         <!-- User Menu -->
                         <div class="relative group">
                             <button
@@ -163,6 +170,13 @@
                 @auth
                     <!-- User Section -->
                     <div class="border-t border-gray-200 mt-4 pt-4">
+                        <!-- Dashboard Link -->
+                        <a href="@if(auth()->user()->level_id == 3){{ route('mitra.dashboard') }}@else{{ route('filament.admin.pages.dashboard') }}@endif" 
+                           class="mobile-nav-link mb-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700">
+                            <i class="fas fa-th-large w-5 text-white"></i>
+                            <span class="font-bold">DASHBOARD</span>
+                        </a>
+
                         <div class="flex items-center space-x-3 px-3 py-2 bg-orange-50 rounded-lg mb-3">
                             <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
                                 <i class="fas fa-user text-white text-sm"></i>

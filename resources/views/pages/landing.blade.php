@@ -108,7 +108,7 @@
                                         <!-- Card Subsektor -->
                                         <a href="{{ route('katalog.subsektor', $sub->slug) }}" class="group transform transition-all duration-300 hover:scale-105">
                                             <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-center border border-gray-100 hover:border-orange-200 relative overflow-hidden h-40">
-                                                <div class="absolute top-0 right-0 w-16 h-16 bg-orange-50 rounded-bl-full transform translate-x-4 -translate-y-4"></div>
+                                                <div class="absolute top-0 right-0 w-10 h-10 bg-orange-50 rounded-bl-full transform translate-x-4 -translate-y-4"></div>
                                                 <div class="relative z-10 h-full flex flex-col justify-center">
                                                     <div class="w-16 h-16 mx-auto mb-3 bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg border-4 border-gray-100 overflow-hidden">
                                                         @if($sub->image)
@@ -174,7 +174,7 @@
                                                 <div class="absolute top-0 right-0 w-16 h-16 bg-orange-50 rounded-bl-full transform translate-x-4 -translate-y-4"></div>
                                                 <div class="relative z-10 h-full flex flex-col justify-center">
                                                     <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                                                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clip-rule="evenodd"></path>
                                                         </svg>
                                                     </div>
@@ -250,12 +250,12 @@
 
                 <!-- Navigation Buttons -->
                 @if($pages->count() > 1)
-                <button id="prevBtn" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 text-gray-600 hover:text-orange-500 z-10">
+                <button id="prevBtn" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 text-gray-600 hover:text-orange-500 z-10">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </button>
-                <button id="nextBtn" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 text-gray-600 hover:text-orange-500 z-10">
+                <button id="nextBtn" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 text-gray-600 hover:text-orange-500 z-10">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
@@ -480,89 +480,74 @@
     <section class="max-w-6xl mx-auto py-14 px-6">
         <h2 class="text-center text-orange-500 font-semibold text-xl mb-12">Manfaat Menjadi Anggota ekraf Kuningan</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 text-gray-700">
-            <div class="space-y-8">
-                <div class="flex items-start space-x-4">
-                    <span class="text-3xl font-bold">1.</span>
-                    <div>
-                        <h3 class="text-base font-semibold mb-2">Sinergi dengan Pelaku Kreatif</h3>
-                        <p class="text-sm leading-relaxed">Menjadi anggota forum ini membuka peluang untuk bekerja sama
-                            dengan berbagai insan kreatif di Bandung Barat, sehingga memperkaya wawasan dan pengalaman Anda.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-start space-x-4">
-                    <span class="text-3xl font-bold">3.</span>
-                    <div>
-                        <h3 class="text-base font-semibold mb-2">Dukungan untuk Pertumbuhan Usaha</h3>
-                        <p class="text-sm leading-relaxed">Forum ini menjadi sarana untuk memperkenalkan bisnis Anda kepada
-                            audiens yang tepat, sekaligus memperoleh bimbingan dalam mengembangkan usaha lebih lanjut.</p>
-                    </div>
-                </div>
-                <div class="flex items-start space-x-4">
-                    <span class="text-3xl font-bold">5.</span>
-                    <div>
-                        <h3 class="text-base font-semibold mb-2">Komunitas yang Mendukung</h3>
-                        <p class="text-sm leading-relaxed">Anda akan menjadi bagian dari komunitas yang saling membantu,
-                            memberikan semangat saat menghadapi tantangan, dan ikut merayakan setiap pencapaian Anda.</p>
-                    </div>
-                </div>
-                <div class="flex items-start space-x-4">
-                    <span class="text-3xl font-bold">7.</span>
-                    <div>
-                        <h3 class="text-base font-semibold mb-2">Meningkatkan Citra dan Eksistensi Usaha</h3>
-                        <p class="text-sm leading-relaxed">Dengan aktif terlibat dalam kegiatan forum dan berkolaborasi
-                            dengan sesama anggota, Anda bisa memperkuat brand awareness dan eksistensi bisnis Anda.</p>
-                    </div>
+            <div class="flex items-start space-x-4">
+                <span class="text-3xl font-bold">1.</span>
+                <div>
+                    <h3 class="text-base font-semibold mb-2">Sinergi dengan Pelaku Kreatif</h3>
+                    <p class="text-sm leading-relaxed">Menjadi anggota forum ini membuka peluang untuk bekerja sama
+                        dengan berbagai insan kreatif di Bandung Barat, sehingga memperkaya wawasan dan pengalaman Anda.
+                    </p>
                 </div>
             </div>
-            <div class="space-y-8">
-                <div class="flex items-start space-x-4">
-                    <span class="text-3xl font-bold">2.</span>
-                    <div>
-                        <h3 class="text-base font-semibold mb-2">Perluasan Relasi Profesional</h3>
-                        <p class="text-sm leading-relaxed">Keanggotaan membantu Anda memperluas koneksi, menjalin hubungan
-                            baru, dan membuka akses ke berbagai peluang usaha dan sumber daya.</p>
-                    </div>
+            <div class="flex items-start space-x-4">
+                <span class="text-3xl font-bold">2.</span>
+                <div>
+                    <h3 class="text-base font-semibold mb-2">Perluasan Relasi Profesional</h3>
+                    <p class="text-sm leading-relaxed">Keanggotaan membantu Anda memperluas koneksi, menjalin hubungan
+                        baru, dan membuka akses ke berbagai peluang usaha dan sumber daya.</p>
                 </div>
-                <div class="flex items-start space-x-4">
-                    <span class="text-3xl font-bold">4.</span>
-                    <div>
-                        <h3 class="text-base font-semibold mb-2">Kesempatan Belajar dan Mengasah Skill</h3>
-                        <p class="text-sm leading-relaxed">Nikmati berbagai program pelatihan, workshop, dan kegiatan
-                            edukatif yang disediakan forum untuk meningkatkan keahlian di sektor ekonomi kreatif.</p>
-                    </div>
+            </div>
+            <div class="flex items-start space-x-4">
+                <span class="text-3xl font-bold">3.</span>
+                <div>
+                    <h3 class="text-base font-semibold mb-2">Dukungan untuk Pertumbuhan Usaha</h3>
+                    <p class="text-sm leading-relaxed">Forum ini menjadi sarana untuk memperkenalkan bisnis Anda kepada
+                        audiens yang tepat, sekaligus memperoleh bimbingan dalam mengembangkan usaha lebih lanjut.</p>
                 </div>
-                <div class="flex items-start space-x-4">
-                    <span class="text-3xl font-bold">6.</span>
-                    <div>
-                        <h3 class="text-base font-semibold mb-2">Informasi Terkini</h3>
-                        <p class="text-sm leading-relaxed">Dapatkan update terbaru mengenai tren industri, peluang usaha,
-                            serta event kreatif di kawasan Bandung Barat.</p>
-                    </div>
+            </div>
+            <div class="flex items-start space-x-4">
+                <span class="text-3xl font-bold">4.</span>
+                <div>
+                    <h3 class="text-base font-semibold mb-2">Kesempatan Belajar dan Mengasah Skill</h3>
+                    <p class="text-sm leading-relaxed">Nikmati berbagai program pelatihan, workshop, dan kegiatan
+                        edukatif yang disediakan forum untuk meningkatkan keahlian di sektor ekonomi kreatif.</p>
                 </div>
-                <div class="flex items-start space-x-4">
-                    <span class="text-3xl font-bold">8.</span>
-                    <div>
-                        <h3 class="text-base font-semibold mb-2">Akses Fasilitas Pendukung Usaha</h3>
-                        <p class="text-sm leading-relaxed">Sebagai anggota, Anda bisa mengakses fasilitas bersama seperti
-                            ruang kerja, alat-alat kreatif, dan sumber daya lainnya yang mendukung efisiensi usaha Anda.</p>
-                    </div>
+            </div>
+            <div class="flex items-start space-x-4">
+                <span class="text-3xl font-bold">5.</span>
+                <div>
+                    <h3 class="text-base font-semibold mb-2">Komunitas yang Mendukung</h3>
+                    <p class="text-sm leading-relaxed">Anda akan menjadi bagian dari komunitas yang saling membantu,
+                        memberikan semangat saat menghadapi tantangan, dan ikut merayakan setiap pencapaian Anda.</p>
+                </div>
+            </div>
+            <div class="flex items-start space-x-4">
+                <span class="text-3xl font-bold">6.</span>
+                <div>
+                    <h3 class="text-base font-semibold mb-2">Informasi Terkini</h3>
+                    <p class="text-sm leading-relaxed">Dapatkan update terbaru mengenai tren industri, peluang usaha,
+                        serta event kreatif di kawasan Bandung Barat.</p>
+                </div>
+            </div>
+            <div class="flex items-start space-x-4">
+                <span class="text-3xl font-bold">7.</span>
+                <div>
+                    <h3 class="text-base font-semibold mb-2">Meningkatkan Citra dan Eksistensi Usaha</h3>
+                    <p class="text-sm leading-relaxed">Dengan aktif terlibat dalam kegiatan forum dan berkolaborasi
+                        dengan sesama anggota, Anda bisa memperkuat brand awareness dan eksistensi bisnis Anda.</p>
+                </div>
+            </div>
+            <div class="flex items-start space-x-4">
+                <span class="text-3xl font-bold">8.</span>
+                <div>
+                    <h3 class="text-base font-semibold mb-2">Akses Fasilitas Pendukung Usaha</h3>
+                    <p class="text-sm leading-relaxed">Sebagai anggota, Anda bisa mengakses fasilitas bersama seperti
+                        ruang kerja, alat-alat kreatif, dan sumber daya lainnya yang mendukung efisiensi usaha Anda.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Track view saat halaman dimuat
-        
-        fetch(`/products/${productId}/track-view`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        });
-    });
-    </script>
 @endsection
+
+

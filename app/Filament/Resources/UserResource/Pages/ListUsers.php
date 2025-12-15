@@ -9,6 +9,9 @@ use Filament\Resources\Pages\ListRecords;
 class ListUsers extends ListRecords
 {
     protected static string $resource = UserResource::class;
+    protected static ?string $title = 'Daftar User';
+    protected static ?string $navigationLabel = 'Daftar User';
+    protected static ?string $breadcrumb = 'Daftar User';
 
     protected function getHeaderActions(): array
     {

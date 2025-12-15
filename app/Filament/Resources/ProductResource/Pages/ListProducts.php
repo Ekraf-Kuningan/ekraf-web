@@ -14,6 +14,9 @@ use Illuminate\Support\Carbon;
 class ListProducts extends ListRecords
 {
     protected static string $resource = ProductResource::class;
+    protected static ?string $title = 'Daftar Produk';
+    protected static ?string $navigationLabel = 'Daftar Produk';
+    protected static ?string $breadcrumb = 'Daftar Produk';
 
     protected function getHeaderActions(): array
     {

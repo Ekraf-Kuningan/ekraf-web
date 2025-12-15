@@ -9,6 +9,9 @@ use Filament\Resources\Pages\ListRecords;
 class ListBanners extends ListRecords
 {
     protected static string $resource = BannerResource::class;
+    protected static ?string $title = 'Daftar Banner';
+    protected static ?string $navigationLabel = 'Daftar Banner';
+    protected static ?string $breadcrumb = 'Daftar Banner';
 
     protected function getHeaderActions(): array
     {

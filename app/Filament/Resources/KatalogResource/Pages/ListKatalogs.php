@@ -9,6 +9,9 @@ use Filament\Resources\Pages\ListRecords;
 class ListKatalogs extends ListRecords
 {
     protected static string $resource = KatalogResource::class;
+    protected static ?string $title = 'Daftar Katalog';
+    protected static ?string $navigationLabel = 'Daftar Katalog';
+    protected static ?string $breadcrumb = 'Daftar Katalog';
 
     protected function getHeaderActions(): array
     {

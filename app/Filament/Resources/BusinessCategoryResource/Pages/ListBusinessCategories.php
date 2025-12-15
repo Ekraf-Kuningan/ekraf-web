@@ -8,6 +8,9 @@ use Filament\Resources\Pages\ListRecords;
 class ListBusinessCategories extends ListRecords
 {
     protected static string $resource = BusinessCategoryResource::class;
+    protected static ?string $title = 'Daftar Kategori Bisnis';
+    protected static ?string $navigationLabel = 'Daftar Kategori Bisnis';
+    protected static ?string $breadcrumb = 'Daftar Kategori Bisnis';
 
     protected function getHeaderActions(): array
     {
