@@ -27,10 +27,10 @@ class VerifyEmailVerification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Verifikasi Email Anda')
-            ->greeting('Halo, ' . $this->userName . ' 👋')
-            ->line('Terima kasih telah mendaftar. Silakan verifikasi email Anda dengan menekan tombol di bawah ini.')
-            ->action('Verifikasi Sekarang', $this->verificationUrl)
-            ->line('Jika Anda tidak membuat akun ini, abaikan saja email ini.');
+            ->subject('Verifikasi Email Anda - EKRAF KUNINGAN')
+            ->view('emails.verify-email', [
+                'verificationUrl' => $this->verificationUrl,
+                'userName' => $this->userName
+            ]);
     }
 }

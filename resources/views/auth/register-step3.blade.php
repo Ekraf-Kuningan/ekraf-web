@@ -6,6 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Lengkapi Profil - EKRAF KUNINGAN</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/LogoEkraf.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/LogoEkraf.png') }}">
+
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -711,6 +715,8 @@
                 </div>
                 <div id="phone-validation" class="validation-message info">Format: 10-13 digit angka</div>
             </div>
+            
+                
 
             <div class="form-row">
                 <div class="input-group">

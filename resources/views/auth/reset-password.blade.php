@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Reset Password - EKRAF KUNINGAN</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/LogoEkraf.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/LogoEkraf.png') }}">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gradient-to-br from-yellow-300 via-orange-400 to-orange-500 min-h-screen">

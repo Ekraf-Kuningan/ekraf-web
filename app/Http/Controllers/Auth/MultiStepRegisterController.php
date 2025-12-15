@@ -49,6 +49,7 @@ class MultiStepRegisterController extends Controller
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+            'password.same'=>'Konfirmasi password harus sama dengan passaword '
         ]);
 
         if ($validator->fails()) {
@@ -159,6 +160,7 @@ class MultiStepRegisterController extends Controller
                 ->withErrors(['error' => 'Token tidak valid atau profil sudah dilengkapi.']);
         }
 
+        
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255', 'unique:users', 'unique:temporary_users,name,' . $temporaryUser->id],
             'phone_number' => ['required', 'string', 'max:20'],

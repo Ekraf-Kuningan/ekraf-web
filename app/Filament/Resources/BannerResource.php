@@ -89,6 +89,7 @@ class BannerResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->helperText('Urutan tampilan banner (angka kecil tampil duluan)')
+               
             ]);
     }
 
