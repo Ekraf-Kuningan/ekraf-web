@@ -10,6 +10,7 @@ use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\Auth\CustomLoginController;
 use App\Http\Controllers\Auth\CustomRegisterController;
+use App\Http\Controllers\Auth\MultiStepRegisterController;
 use App\Http\Controllers\Mitra\MitraDashboardController;
 use App\Http\Controllers\Mitra\MitraProductController;
 use App\Http\Controllers\Mitra\MitraProfileController;
@@ -38,6 +39,7 @@ Route::get('/katalog/detail/{slug}', [KatalogController::class, 'show'])->name('
 Route::get('/katalog/subsektor/{subsektor}', [KatalogController::class, 'bySubsektor'])->name('katalog.subsektor');
 Route::post('/katalog/{slug}/track-view', [KatalogViewController::class, 'track'])->name('katalog.track-view');
 Route::get('/kontak', [KontakController::class, 'index'])->name('kontak');
+Route::post('/kontak', [KontakController::class, 'send'])->name('kontak.send');
 Route::get('/artikel', [BeritaController::class, 'index'])->name('artikel');
 Route::get('/artikels/{slug}', [ArtikelController::class,'show'])->name('artikels.show');
 
@@ -59,9 +61,16 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [CustomLoginController::class, 'create'])->name('login');
     Route::post('/login', [CustomLoginController::class, 'store']);
     
-    // Route Register harus di guest middleware
-    Route::get('/register-pelakuekraf', [CustomRegisterController::class, 'create'])->name('register-pelakuekraf');
-    Route::post('/register-pelakuekraf', [CustomRegisterController::class, 'store']);
+    // Multi-Step Registration Routes
+    // Step 1: Basic registration (username, email, password)
+    Route::get('/register-pelakuekraf', [MultiStepRegisterController::class, 'showStep1'])->name('register-pelakuekraf');
+    Route::post('/register-pelakuekraf', [MultiStepRegisterController::class, 'storeStep1']);
+    
+    // Step 2: Email verification (handled in auth.php)
+    
+    // Step 3: Complete profile
+    Route::get('/register-pelakuekraf/complete-profile/{token}', [MultiStepRegisterController::class, 'showStep3'])->name('register.step3');
+    Route::post('/register-pelakuekraf/complete-profile/{token}', [MultiStepRegisterController::class, 'storeStep3']);
 });
 
 // Custom Logout Route

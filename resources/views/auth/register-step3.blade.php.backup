@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Lengkapi Profil - EKRAF KUNINGAN</title>
+
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/index.js"></script>
+
+    <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+            background: white;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            background: white;
+            width: 5rem;
+            height: 5rem;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo-container img {
+            width: 3.5rem;
+            height: 3.5rem;
+            object-fit: contain;
+        }
+
+        .header-section h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-section p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+
+        .register-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-header p {
+            color: #6B7280;
+            font-size: 0.95rem;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 0.5rem;
+        }
+
+        .step {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            position: relative;
+        }
+
+        .step.completed {
+            background-color: #10B981;
+            color: white;
+        }
+
+        .step.completed::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+        }
+
+        .step.active {
+            background-color: #F59E0B;
+            color: white;
+        }
+
+        .step.inactive {
+            background-color: #E5E7EB;
+            color: #9CA3AF;
+        }
+
+        .step-line {
+            width: 2rem;
+            height: 2px;
+            background-color: #E5E7EB;
+        }
+
+        .step-line.completed {
+            background-color: #10B981;
+        }
+
+        .user-info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .user-info-box h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .user-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .user-info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .user-info-item i {
+            width: 1.25rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select,
+        .input-wrapper textarea {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .input-wrapper textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus,
+        .input-wrapper textarea:focus {
+            outline: none;
+            border-color: #F59E0B;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            color: #9CA3AF;
+            font-size: 1.125rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            padding-left: 2.75rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 1.125rem;
+            height: 1.125rem;
+            cursor: pointer;
+            accent-color: #F59E0B;
+        }
+
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1rem;
+            border: 2px dashed #E5E7EB;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #F9FAFB;
+        }
+
+        .file-input-label:hover {
+            border-color: #F59E0B;
+            background-color: #FEF3C7;
+        }
+
+        .file-input-label i {
+            color: #9CA3AF;
+            font-size: 1.25rem;
+        }
+
+        .file-input-label span {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-preview {
+            margin-top: 0.75rem;
+            display: none;
+        }
+
+        .file-preview.active {
+            display: block;
+        }
+
+        .file-preview img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            border: 2px solid #E5E7EB;
+        }
+
+        .validation-message {
+            font-size: 0.8rem;
+            margin-top: 0.375rem;
+        }
+
+        .validation-message.error {
+            color: #EF4444;
+        }
+
+        .validation-message.success {
+            color: #10B981;
+        }
+
+        .validation-message.info {
+            color: #6B7280;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: #F59E0B;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            background-color: #D97706;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background-color: #9CA3AF;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .alert {
+            padding: 0.875rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.95rem;
+        }
+
+        .alert-error {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .register-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .register-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-section {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="logo-container">
+                <img src="{{ asset('assets/img/LogoEkraf.png') }}" alt="EKRAF Logo">
+            </div>
+            <h1>EKRAF KUNINGAN</h1>
+            <p>Daftar Menjadi Mitra UMKM Sekarang</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="register-container">
+            <div class="register-header">
+                <h1>Lengkapi Profil Anda</h1>
+                <p>Tahap 3: Informasi profil dan bisnis</p>
+            </div>
+
+        <div class="step-indicator">
+            <div class="step completed"></div>
+            <div class="step-line completed"></div>
+            <div class="step completed"></div>
+            <div class="step-line completed"></div>
+            <div class="step active">3</div>
+        </div>
+
+        <div class="user-info-box">
+            <h3><i class="fas fa-info-circle"></i> Informasi Akun</h3>
+            <div class="user-info-item">
+                <i class="fas fa-user"></i>
+                <span><strong>Username:</strong> {{ $temporaryUser->username }}</span>
+            </div>
+            <div class="user-info-item">
+                <i class="fas fa-envelope"></i>
+                <span><strong>Email:</strong> {{ $temporaryUser->email }}</span>
+            </div>
+        </div>
+
+        @if ($errors->any())
+            <div class="alert alert-error">
+                <ul style="margin: 0; padding-left: 1.25rem;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('register.step3', ['token' => $token]) }}" id="registerForm" enctype="multipart/form-data">
+            @csrf
+
+            <div class="input-group">
+                <label for="name">Nama Lengkap <span style="color: #EF4444;">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user icon"></i>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        value="{{ old('name') }}"
+                        placeholder="Masukkan nama lengkap" 
+                        required
+                        autocomplete="name">
+                </div>
+                <div id="name-validation" class="validation-message"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="phone_number">Nomor Telepon <span style="color: #EF4444;">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-phone icon"></i>
+                    <input 
+                        type="text" 
+                        id="phone_number" 
+                        name="phone_number" 
+                        value="{{ old('phone_number') }}"
+                        placeholder="Contoh: 081234567890" 
+                        required
+                        pattern="[0-9]{10,13}"
+                        autocomplete="tel">
+                </div>
+                <div id="phone-validation" class="validation-message info">Format: 10-13 digit angka</div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="nik">NIK <span style="color: #EF4444;">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-id-card icon"></i>
+                        <input 
+                            type="text" 
+                            id="nik" 
+                            name="nik" 
+                            value="{{ old('nik') }}"
+                            placeholder="16 digit NIK" 
+                            required
+                            pattern="[0-9]{16}"
+                            maxlength="16"
+                            autocomplete="off">
+                    </div>
+                    <div id="nik-validation" class="validation-message info">16 digit</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="nib">NIB (Nomor Induk Berusaha) <span style="color: #9CA3AF; font-size: 0.85rem;">(Opsional)</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-briefcase icon"></i>
+                        <input 
+                            type="text" 
+                            id="nib" 
+                            name="nib" 
+                            value="{{ old('nib') }}"
+                            placeholder="Masukkan NIB 13 digit (opsional)" 
+                            pattern="[0-9]{13}"
+                            maxlength="13"
+                            autocomplete="off">
+                    </div>
+                    <div id="nib-validation" class="validation-message info">Opsional - 13 digit jika diisi</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="alamat">Alamat <span style="color: #EF4444;">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-map-marker-alt icon"></i>
+                    <textarea 
+                        id="alamat" 
+                        name="alamat" 
+                        placeholder="Masukkan alamat lengkap" 
+                        required
+                        autocomplete="street-address">{{ old('alamat') }}</textarea>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Jenis Kelamin <span style="color: #EF4444;">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input 
+                            type="radio" 
+                            id="male" 
+                            name="gender" 
+                            value="male" 
+                            {{ old('gender') === 'male' ? 'checked' : '' }}
+                            required>
+                        <label for="male">Laki-laki</label>
+                    </div>
+                    <div class="radio-option">
+                        <input 
+                            type="radio" 
+                            id="female" 
+                            name="gender" 
+                            value="female"
+                            {{ old('gender') === 'female' ? 'checked' : '' }}
+                            required>
+                        <label for="female">Perempuan</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="profile_image">Foto Profil</label>
+                <div class="file-input-wrapper">
+                    <label for="profile_image" class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span id="file-label">Pilih foto profil (opsional)</span>
+                    </label>
+                    <input 
+                        type="file" 
+                        id="profile_image" 
+                        name="profile_image"
+                        accept="image/*">
+                </div>
+                <div class="validation-message info">Format: JPG, PNG, maksimal 2MB</div>
+                <div id="image-preview" class="file-preview">
+                    <img id="preview-img" src="" alt="Preview">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="business_name">Nama Usaha <span style="color: #EF4444;">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-store icon"></i>
+                    <input 
+                        type="text" 
+                        id="business_name" 
+                        name="business_name" 
+                        value="{{ old('business_name') }}"
+                        placeholder="Masukkan nama usaha" 
+                        required
+                        autocomplete="organization">
+                </div>
+                <div id="business-name-validation" class="validation-message"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="business_status">Status Usaha <span style="color: #EF4444;">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-chart-line icon"></i>
+                    <select id="business_status" name="business_status" required>
+                        <option value="">Pilih status usaha</option>
+                        <option value="new" {{ old('business_status') === 'new' ? 'selected' : '' }}>Usaha Baru</option>
+                        <option value="existing" {{ old('business_status') === 'existing' ? 'selected' : '' }}>Usaha yang Sudah Berjalan</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="sub_sektor_id">Sub Sektor EKRAF <span style="color: #EF4444;">*</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-layer-group icon"></i>
+                    <select id="sub_sektor_id" name="sub_sektor_id" required>
+                        <option value="">Pilih sub sektor</option>
+                        @foreach($subSektors as $subSektor)
+                            <option value="{{ $subSektor->id }}" {{ old('sub_sektor_id') == $subSektor->id ? 'selected' : '' }}>
+                                {{ $subSektor->title }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">
+                <i class="fas fa-check-circle"></i> Selesaikan Registrasi
+            </button>
+        </form>
+    </div>
+    </div>
+
+    <script>
+        // File upload preview
+        document.getElementById('profile_image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const fileLabel = document.getElementById('file-label');
+            const imagePreview = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+
+            if (file) {
+                // Validate file size (2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran file terlalu besar. Maksimal 2MB.');
+                    this.value = '';
+                    fileLabel.textContent = 'Pilih foto profil (opsional)';
+                    imagePreview.classList.remove('active');
+                    return;
+                }
+
+                // Validate file type
+                if (!file.type.match('image.*')) {
+                    alert('File harus berupa gambar.');
+                    this.value = '';
+                    fileLabel.textContent = 'Pilih foto profil (opsional)';
+                    imagePreview.classList.remove('active');
+                    return;
+                }
+
+                fileLabel.textContent = file.name;
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fileLabel.textContent = 'Pilih foto profil (opsional)';
+                imagePreview.classList.remove('active');
+            }
+        });
+
+        // Real-time validation for unique fields
+        let validationTimeout;
+
+        function validateField(field, value) {
+            clearTimeout(validationTimeout);
+            
+            if (!value) return;
+
+            // Skip validation if field doesn't meet minimum requirements
+            if (field === 'nik' && value.length !== 16) return;
+            if (field === 'nib' && value.length !== 13) return;
+
+            validationTimeout = setTimeout(() => {
+                fetch('/api/check-availability-step3', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ 
+                        field, 
+                        value,
+                        token: '{{ $token }}'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let validationDiv;
+                    if (field === 'business_name') {
+                        validationDiv = document.getElementById('business-name-validation');
+                    } else {
+                        validationDiv = document.getElementById(`${field}-validation`);
+                    }
+                    
+                    if (data.available) {
+                        validationDiv.className = 'validation-message success';
+                        validationDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${data.message}`;
+                    } else {
+                        validationDiv.className = 'validation-message error';
+                        validationDiv.innerHTML = `<i class="fas fa-times-circle"></i> ${data.message}`;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }, 500);
+        }
+
+        // Validate name
+        document.getElementById('name').addEventListener('input', function() {
+            validateField('name', this.value);
+        });
+
+        // Validate NIK
+        document.getElementById('nik').addEventListener('input', function() {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            const validationDiv = document.getElementById('nik-validation');
+            if (this.value.length === 16) {
+                validateField('nik', this.value);
+            } else if (this.value.length > 0) {
+                validationDiv.className = 'validation-message info';
+                validationDiv.innerHTML = `16 digit (${this.value.length}/16)`;
+            }
+        });
+
+        // Validate NIB (optional)
+        document.getElementById('nib').addEventListener('input', function() {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            const validationDiv = document.getElementById('nib-validation');
+            if (this.value.length === 0) {
+                validationDiv.className = 'validation-message info';
+                validationDiv.innerHTML = 'Opsional - 13 digit jika diisi';
+            } else if (this.value.length === 13) {
+                validateField('nib', this.value);
+            } else if (this.value.length > 0) {
+                validationDiv.className = 'validation-message info';
+                validationDiv.innerHTML = `13 digit (${this.value.length}/13)`;
+            }
+        });
+
+        // Validate business name
+        document.getElementById('business_name').addEventListener('input', function() {
+            validateField('business_name', this.value);
+        });
+
+        // Validate phone number format
+        document.getElementById('phone_number').addEventListener('input', function() {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            const validationDiv = document.getElementById('phone-validation');
+            if (this.value.length >= 10 && this.value.length <= 13) {
+                validationDiv.className = 'validation-message success';
+                validationDiv.innerHTML = '<i class="fas fa-check-circle"></i> Format nomor valid';
+            } else if (this.value.length > 0) {
+                validationDiv.className = 'validation-message info';
+                validationDiv.innerHTML = `Format: 10-13 digit angka (${this.value.length})`;
+            }
+        });
+
+        // Form submission validation
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const nik = document.getElementById('nik').value;
+            const nib = document.getElementById('nib').value;
+            const phone = document.getElementById('phone_number').value;
+
+            if (nik.length !== 16) {
+                e.preventDefault();
+                alert('NIK harus 16 digit');
+                document.getElementById('nik').focus();
+                return;
+            }
+
+            // NIB is optional, but if filled must be 13 digits
+            if (nib && nib.length !== 13) {
+                e.preventDefault();
+                alert('NIB harus 13 digit (atau kosongkan jika tidak punya)');
+                document.getElementById('nib').focus();
+                return;
+            }
+
+            if (phone.length < 10 || phone.length > 13) {
+                e.preventDefault();
+                alert('Nomor telepon harus 10-13 digit');
+                document.getElementById('phone_number').focus();
+                return;
+            }
+
+            // Disable submit button to prevent double submission
+            document.getElementById('submitBtn').disabled = true;
+        });
+    </script>
+</body>
+</html>

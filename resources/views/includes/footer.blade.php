@@ -26,14 +26,13 @@
                         class="px-4 py-2 rounded bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
                 <div class="grid md:grid-cols-2 gap-3 mb-3">
-                    <select name="type" required
+                    <select name="type" id="testimonialType" required
                         class="px-4 py-2 rounded bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500">
                         <option value="">Pilih Jenis</option>
                         <option value="testimoni">Testimoni</option>
-                        <option value="saran">Saran</option>
-                        <option value="masukan">Masukan</option>
+                        <option value="saran">Saran/Masukan</option>
                     </select>
-                    <div class="flex items-center justify-center bg-white rounded px-4 py-2">
+                    <div id="ratingSection" class="flex items-center justify-center bg-white rounded px-4 py-2">
                         <span class="text-gray-700 mr-2">Rating:</span>
                         <div class="flex gap-1" id="ratingStars">
                             <i class="fas fa-star text-2xl cursor-pointer text-gray-300 hover:text-yellow-500" data-rating="1"></i>
@@ -42,7 +41,7 @@
                             <i class="fas fa-star text-2xl cursor-pointer text-gray-300 hover:text-yellow-500" data-rating="4"></i>
                             <i class="fas fa-star text-2xl cursor-pointer text-gray-300 hover:text-yellow-500" data-rating="5"></i>
                         </div>
-                        <input type="hidden" name="rating" id="ratingInput" value="5" required>
+                        <input type="hidden" name="rating" id="ratingInput" value="5">
                     </div>
                 </div>
                 <textarea name="message" placeholder="Tulis pesan Anda..." required rows="3"
@@ -60,7 +59,23 @@
     // Rating stars functionality
     const stars = document.querySelectorAll('#ratingStars i');
     const ratingInput = document.getElementById('ratingInput');
+    const ratingSection = document.getElementById('ratingSection');
+    const testimonialType = document.getElementById('testimonialType');
     let currentRating = 5; // Default 5 stars
+
+    // Toggle rating section based on type
+    testimonialType.addEventListener('change', function() {
+        if (this.value === 'testimoni') {
+            ratingSection.style.display = 'flex';
+            ratingInput.setAttribute('required', 'required');
+        } else {
+            ratingSection.style.display = 'none';
+            ratingInput.removeAttribute('required');
+        }
+    });
+
+    // Hide rating section initially (until testimoni is selected)
+    ratingSection.style.display = 'none';
 
     // Set initial state (5 stars)
     stars.forEach((star, index) => {

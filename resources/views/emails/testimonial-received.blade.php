@@ -95,7 +95,7 @@
         
         <p style="margin-top: 30px;">
             Salam hangat,<br>
-            <strong>Tim EKRAF Kuningan</strong>
+            <strong>Tim Ekonomi Kreatif Kabupaten Kuningan</strong>
         </p>
     </div>
     

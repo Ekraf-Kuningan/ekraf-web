@@ -8,21 +8,19 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\CustomRegisterController;
+use App\Http\Controllers\Auth\MultiStepRegisterController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register-pelakuekraf', [CustomRegisterController::class, 'create'])
-        ->name('register-pelakuekraf');
-
-    Route::post('register-pelakuekraf', [CustomRegisterController::class, 'store']);
-
-    // Email verification route (untuk user yang belum login)
-    Route::get('verify-email/{token}', [CustomRegisterController::class, 'verifyEmail'])
+    // Multi-step registration routes are in web.php
+    
+    // Email verification route (Step 2)
+    Route::get('verify-email/{token}', [MultiStepRegisterController::class, 'verifyEmail'])
         ->name('verify.email');
 
     // Resend verification email
-    Route::post('resend-verification', [CustomRegisterController::class, 'resendVerification'])
+    Route::post('resend-verification', [MultiStepRegisterController::class, 'resendVerification'])
         ->name('resend.verification');
 
     // Route login GET dan POST dihapus karena kita menggunakan custom login

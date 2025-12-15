@@ -33,6 +33,8 @@ class TemporaryUser extends Model
         'level_id',
         'sub_sektor_id',
         'createdAt',
+        'is_verified',
+        'profile_completed',
     ];
 
     // Cast tipe data

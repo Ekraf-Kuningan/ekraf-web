@@ -23,22 +23,36 @@ use App\Services\CloudinaryService;
 class CustomRegisterController extends Controller
 {
     /**
-     * Show the registration form.
+     * Show the registration form - Step 1 (Username, Email, Password)
      */
     public function create()
     {
-        $levels = Level::all();
-        $subSektors = SubSektor::all();
-        
-        // Debug: Log data
-        Log::info('Levels count: ' . $levels->count());
-        Log::info('SubSektors count: ' . $subSektors->count());
-        
-        return view('auth.register', compact('levels', 'subSektors'));
+        return view('auth.register-step1');
     }
 
     /**
-     * Handle registration request.
+     * Show complete profile form - Step 3
+     */
+    public function showCompleteProfile($token)
+    {
+        $temporaryUser = TemporaryUser::where('verificationToken', $token)
+            ->where('is_verified', true)
+            ->where('profile_completed', false)
+            ->first();
+
+        if (!$temporaryUser) {
+            return redirect()->route('register-pelakuekraf')
+                ->withErrors(['error' => 'Token tidak valid atau profil sudah dilengkapi.']);
+        }
+
+        $levels = Level::all();
+        $subSektors = SubSektor::all();
+        
+        return view('auth.register-step3', compact('temporaryUser', 'levels', 'subSektors', 'token'));
+    }
+
+    /**
+     * Handle registration request - Step 1 (Username, Email, Password)
      */
     public function store(Request $request)
     {

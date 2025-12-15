@@ -79,12 +79,12 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Jenis <span class="text-red-500">*</span>
                     </label>
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="grid grid-cols-2 gap-3">
                         <label class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-orange-300
-                            {{ old('type', $testimonial->type ?? 'testimoni') === 'testimoni' ? 'border-orange-500 bg-orange-50' : 'border-gray-200' }}">
+                            {{ old('type', $testimonial->type ?? 'testimoni') === 'testimoni' ? 'border-orange-500 bg-orange-50' : 'border-gray-200' }}" id="type-testimoni">
                             <input type="radio" name="type" value="testimoni" 
                                 {{ old('type', $testimonial->type ?? 'testimoni') === 'testimoni' ? 'checked' : '' }}
-                                class="sr-only peer">
+                                class="sr-only peer type-radio">
                             <div class="text-center">
                                 <i class="fas fa-star text-2xl mb-2 {{ old('type', $testimonial->type ?? 'testimoni') === 'testimoni' ? 'text-orange-500' : 'text-gray-400' }}"></i>
                                 <div class="text-sm font-medium {{ old('type', $testimonial->type ?? 'testimoni') === 'testimoni' ? 'text-orange-700' : 'text-gray-600' }}">
@@ -94,27 +94,14 @@
                         </label>
 
                         <label class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-orange-300
-                            {{ old('type', $testimonial->type ?? '') === 'saran' ? 'border-orange-500 bg-orange-50' : 'border-gray-200' }}">
+                            {{ in_array(old('type', $testimonial->type ?? ''), ['saran', 'masukan']) ? 'border-orange-500 bg-orange-50' : 'border-gray-200' }}" id="type-saran">
                             <input type="radio" name="type" value="saran" 
-                                {{ old('type', $testimonial->type ?? '') === 'saran' ? 'checked' : '' }}
-                                class="sr-only peer">
+                                {{ in_array(old('type', $testimonial->type ?? ''), ['saran', 'masukan']) ? 'checked' : '' }}
+                                class="sr-only peer type-radio">
                             <div class="text-center">
-                                <i class="fas fa-lightbulb text-2xl mb-2 {{ old('type', $testimonial->type ?? '') === 'saran' ? 'text-orange-500' : 'text-gray-400' }}"></i>
-                                <div class="text-sm font-medium {{ old('type', $testimonial->type ?? '') === 'saran' ? 'text-orange-700' : 'text-gray-600' }}">
-                                    Saran
-                                </div>
-                            </div>
-                        </label>
-
-                        <label class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-orange-300
-                            {{ old('type', $testimonial->type ?? '') === 'masukan' ? 'border-orange-500 bg-orange-50' : 'border-gray-200' }}">
-                            <input type="radio" name="type" value="masukan" 
-                                {{ old('type', $testimonial->type ?? '') === 'masukan' ? 'checked' : '' }}
-                                class="sr-only peer">
-                            <div class="text-center">
-                                <i class="fas fa-comment-dots text-2xl mb-2 {{ old('type', $testimonial->type ?? '') === 'masukan' ? 'text-orange-500' : 'text-gray-400' }}"></i>
-                                <div class="text-sm font-medium {{ old('type', $testimonial->type ?? '') === 'masukan' ? 'text-orange-700' : 'text-gray-600' }}">
-                                    Masukan
+                                <i class="fas fa-lightbulb text-2xl mb-2 {{ in_array(old('type', $testimonial->type ?? ''), ['saran', 'masukan']) ? 'text-orange-500' : 'text-gray-400' }}"></i>
+                                <div class="text-sm font-medium {{ in_array(old('type', $testimonial->type ?? ''), ['saran', 'masukan']) ? 'text-orange-700' : 'text-gray-600' }}">
+                                    Saran/Masukan
                                 </div>
                             </div>
                         </label>
@@ -138,8 +125,8 @@
                     @enderror
                 </div>
 
-                <!-- Rating -->
-                <div class="mb-6">
+                <!-- Rating (Only for Testimoni) -->
+                <div class="mb-6" id="rating-section" style="display: {{ old('type', $testimonial->type ?? 'testimoni') === 'testimoni' ? 'block' : 'none' }};">
                     <label class="block text-sm font-semibold text-gray-700 mb-3">
                         Rating <span class="text-red-500">*</span>
                     </label>
@@ -148,7 +135,7 @@
                             <label class="cursor-pointer">
                                 <input type="radio" name="rating" value="{{ $i }}" 
                                     {{ old('rating', $testimonial->rating ?? 5) == $i ? 'checked' : '' }}
-                                    class="sr-only peer" required>
+                                    class="sr-only peer rating-input">
                                 <i class="fas fa-star text-3xl text-gray-300 peer-checked:text-yellow-500 hover:text-yellow-400 transition-colors"></i>
                             </label>
                         @endfor
@@ -237,6 +224,29 @@ const ratingText = document.getElementById('rating-text');
 ratingInputs.forEach(input => {
     input.addEventListener('change', function() {
         ratingText.textContent = `${this.value} dari 5 bintang`;
+    });
+});
+
+// Toggle rating section based on type selection
+const typeRadios = document.querySelectorAll('.type-radio');
+const ratingSection = document.getElementById('rating-section');
+const ratingInputsForRequired = document.querySelectorAll('.rating-input');
+
+typeRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+        if (this.value === 'testimoni') {
+            ratingSection.style.display = 'block';
+            // Make rating required for testimoni
+            ratingInputsForRequired.forEach(input => {
+                input.setAttribute('required', 'required');
+            });
+        } else {
+            ratingSection.style.display = 'none';
+            // Remove required for saran/masukan
+            ratingInputsForRequired.forEach(input => {
+                input.removeAttribute('required');
+            });
+        }
     });
 });
 

@@ -21,21 +21,69 @@
             <div class="md:col-span-2 space-y-6">
                 <h2 class="text-2xl font-bold text-gray-800">Hubungi Kami !</h2>
                 <p class="text-gray-600">Ayo Kolaborasi Dengan Ekraf, Dukung UMKM Dan Wujudkan Ide Kreatif Bersama!</p>
-                <form class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" placeholder="Nama Anda*"
-                            class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none">
-                        <input type="text" placeholder="Nomor Telepon*"
-                            class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none">
-                        <input type="email" placeholder="Alamat Email*"
-                            class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none">
-                        <input type="text" placeholder="Judul*"
-                            class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none">
+                
+                @if(session('success'))
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle mr-3 text-xl"></i>
+                            <p class="font-medium">{{ session('success') }}</p>
+                        </div>
                     </div>
-                    <textarea placeholder="Tuliskan Pesan*" rows="5"
-                        class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none"></textarea>
-                    <button type="submit"
-                        class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600">KIRIM</button>
+                @endif
+
+                @if(session('error'))
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle mr-3 text-xl"></i>
+                            <p class="font-medium">{{ session('error') }}</p>
+                        </div>
+                    </div>
+                @endif
+
+                <form action="{{ route('kontak.send') }}" method="POST" class="space-y-4" id="contactForm">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <input type="text" name="name" placeholder="Nama Anda*" value="{{ old('name') }}" required
+                                class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 @error('name') border-red-500 @enderror">
+                            @error('name')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <input type="text" name="phone" placeholder="Nomor Telepon*" value="{{ old('phone') }}" required
+                                class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 @error('phone') border-red-500 @enderror">
+                            @error('phone')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <input type="email" name="email" placeholder="Alamat Email*" value="{{ old('email') }}" required
+                                class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 @error('email') border-red-500 @enderror">
+                            @error('email')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <input type="text" name="subject" placeholder="Judul*" value="{{ old('subject') }}" required
+                                class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 @error('subject') border-red-500 @enderror">
+                            @error('subject')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                    <div>
+                        <textarea name="message" placeholder="Tuliskan Pesan*" rows="5" required
+                            class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-orange-500 @error('message') border-red-500 @enderror">{{ old('message') }}</textarea>
+                        @error('message')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                        <p class="text-sm text-gray-500 mt-1">Minimal 10 karakter, maksimal 2000 karakter</p>
+                    </div>
+                    <button type="submit" id="submitBtn"
+                        class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600 transition-colors duration-200 font-semibold">
+                        <i class="fas fa-paper-plane mr-2"></i>KIRIM
+                    </button>
                 </form>
             </div>
 
@@ -70,4 +118,29 @@
         </iframe>
 
     </section>
+
+    <script>
+        // Loading state for form submission
+        const contactForm = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', function() {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>MENGIRIM...';
+            });
+        }
+
+        // Auto hide success/error message after 5 seconds
+        @if(session('success') || session('error'))
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('[role="alert"]');
+                alerts.forEach(alert => {
+                    alert.style.transition = 'opacity 0.5s';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                });
+            }, 5000);
+        @endif
+    </script>
 @endsection

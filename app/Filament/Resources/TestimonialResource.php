@@ -73,8 +73,7 @@ class TestimonialResource extends Resource
                             ->label('Jenis')
                             ->options([
                                 'testimoni' => 'Testimoni',
-                                'saran' => 'Saran',
-                                'masukan' => 'Masukan',
+                                'saran' => 'Saran/Masukan',
                             ])
                             ->required()
                             ->default('testimoni')
@@ -162,10 +161,9 @@ class TestimonialResource extends Resource
                     ])
                     ->icons([
                         'heroicon-o-star' => 'testimoni',
-                        'heroicon-o-light-bulb' => 'saran',
-                        'heroicon-o-chat-bubble-left-right' => 'masukan',
+                        'heroicon-o-light-bulb' => fn (string $state): bool => in_array($state, ['saran', 'masukan']),
                     ])
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state)),
+                    ->formatStateUsing(fn (string $state): string => $state === 'testimoni' ? 'Testimoni' : 'Saran/Masukan'),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
@@ -205,9 +203,14 @@ class TestimonialResource extends Resource
                     ->label('Jenis')
                     ->options([
                         'testimoni' => 'Testimoni',
-                        'saran' => 'Saran',
-                        'masukan' => 'Masukan',
-                    ]),
+                        'saran' => 'Saran/Masukan',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if ($data['value'] === 'saran') {
+                            return $query->whereIn('type', ['saran', 'masukan']);
+                        }
+                        return $query->where('type', $data['value'] ?? '');
+                    }),
 
                 Tables\Filters\SelectFilter::make('rating')
                     ->label('Rating')

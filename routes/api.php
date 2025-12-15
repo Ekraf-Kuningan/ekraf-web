@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\BusinessCategoryController;
 use App\Http\Controllers\Api\SyncController;
 use App\Http\Requests\Api\SearchRequest;
 use App\Http\Controllers\Auth\CustomRegisterController;
+use App\Http\Controllers\Auth\MultiStepRegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +40,8 @@ Route::middleware(['throttle:api', 'api.security.headers'])->group(function () {
     })->middleware('throttle:health'); // Use health rate limiter
 
     // Registration availability check
-    Route::post('/check-availability', [CustomRegisterController::class, 'checkAvailability']);
+    Route::post('/check-availability-step1', [MultiStepRegisterController::class, 'checkAvailabilityStep1']);
+    Route::post('/check-availability-step3', [MultiStepRegisterController::class, 'checkAvailabilityStep3']);
 
     // Artikel (Berita) Routes
     Route::prefix('artikel')->group(function () {
