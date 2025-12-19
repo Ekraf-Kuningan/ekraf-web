@@ -83,7 +83,39 @@ class ProductResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label('Product Name')
                     ->required()
-                    ->maxLength(50),
+                    ->maxLength(50)
+                    ->unique(
+                        table: Product::class, 
+                        column: 'name',
+                        ignoreRecord: true
+                    )
+                    ->rules([
+                        function ($livewire) {
+                            return function (string $attribute, $value, \Closure $fail) use ($livewire) {
+                                // Get current record ID if editing
+                                $currentId = $livewire->record->id ?? null;
+                                
+                                // Check if product name already exists (case-insensitive)
+                                $query = Product::whereRaw('LOWER(name) = ?', [strtolower($value)]);
+                                
+                                // Exclude current record when editing
+                                if ($currentId) {
+                                    $query->where('id', '!=', $currentId);
+                                }
+                                
+                                if ($query->exists()) {
+                                    $fail('Nama produk "' . $value . '" sudah digunakan. Silakan gunakan nama yang berbeda.');
+                                }
+                            };
+                        },
+                    ])
+                    ->helperText('Nama produk harus unik dan belum pernah digunakan sebelumnya.')
+                    ->live(onBlur: true)
+                    ->validationMessages([
+                        'required' => 'Nama produk wajib diisi.',
+                        'max' => 'Nama produk maksimal 50 karakter.',
+                        'unique' => 'Nama produk sudah digunakan. Silakan gunakan nama lain.',
+                    ]),
 
                 Forms\Components\Textarea::make('description')
                     ->label('Description')

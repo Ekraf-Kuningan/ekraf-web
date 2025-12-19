@@ -129,6 +129,7 @@ Route::middleware('auth')->prefix('mitra')->name('mitra.')->group(function () {
     Route::get('/products', [MitraProductController::class, 'index'])->name('products');
     Route::get('/products/create', [MitraProductController::class, 'create'])->name('products.create');
     Route::post('/products', [MitraProductController::class, 'store'])->name('products.store');
+    Route::post('/products/check-name', [MitraProductController::class, 'checkProductName'])->name('products.check-name');
     Route::get('/products/{product}', [MitraProductController::class, 'show'])->name('products.show');
     Route::get('/products/{product}/edit', [MitraProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [MitraProductController::class, 'update'])->name('products.update');

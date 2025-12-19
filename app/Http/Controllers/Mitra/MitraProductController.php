@@ -78,14 +78,31 @@ class MitraProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:50',
+            'name' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:products,name',
+                function ($attribute, $value, $fail) {
+                    // Check for case-insensitive duplicate
+                    $exists = Product::whereRaw('LOWER(name) = ?', [strtolower($value)])->exists();
+                    if ($exists) {
+                        $fail('Nama produk "' . $value . '" sudah digunakan. Silakan gunakan nama yang berbeda.');
+                    }
+                },
+            ],
             'description' => 'required|string|max:500',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'sub_sektor_id' => 'required|exists:sub_sectors,id',
             'business_category_id' => 'nullable|exists:business_categories,id',
             'image' => 'nullable|image|max:2048|mimes:jpeg,jpg,png,webp',
+        ], [
+            'name.required' => 'Nama produk wajib diisi.',
+            'name.max' => 'Nama produk maksimal 50 karakter.',
+            'name.unique' => 'Nama produk sudah digunakan. Silakan gunakan nama lain.',
         ]);
+
 
         $user = Auth::user();
         
@@ -171,14 +188,33 @@ class MitraProductController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:50',
+            'name' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:products,name,' . $product->id,
+                function ($attribute, $value, $fail) use ($product) {
+                    // Check for case-insensitive duplicate (excluding current product)
+                    $exists = Product::whereRaw('LOWER(name) = ?', [strtolower($value)])
+                        ->where('id', '!=', $product->id)
+                        ->exists();
+                    if ($exists) {
+                        $fail('Nama produk "' . $value . '" sudah digunakan. Silakan gunakan nama yang berbeda.');
+                    }
+                },
+            ],
             'description' => 'required|string|max:500',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'sub_sektor_id' => 'required|exists:sub_sectors,id',
             'business_category_id' => 'nullable|exists:business_categories,id',
             'image' => 'nullable|image|max:2048|mimes:jpeg,jpg,png,webp',
+        ], [
+            'name.required' => 'Nama produk wajib diisi.',
+            'name.max' => 'Nama produk maksimal 50 karakter.',
+            'name.unique' => 'Nama produk sudah digunakan. Silakan gunakan nama lain.',
         ]);
+
 
         // Upload image ke Cloudinary jika ada file baru
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
@@ -241,5 +277,25 @@ class MitraProductController extends Controller
         
         return redirect()->route('mitra.products')
             ->with('success', 'Produk berhasil dihapus');
+    }
+
+    /**
+     * Check if product name already exists (for AJAX validation)
+     */
+    public function checkProductName(Request $request)
+    {
+        $name = $request->input('name');
+        $productId = $request->input('product_id'); // For edit mode
+        
+        $query = Product::whereRaw('LOWER(name) = ?', [strtolower($name)]);
+        
+        // Exclude current product when editing
+        if ($productId) {
+            $query->where('id', '!=', $productId);
+        }
+        
+        $exists = $query->exists();
+        
+        return response()->json(['exists' => $exists]);
     }
 }

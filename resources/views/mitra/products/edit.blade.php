@@ -67,7 +67,8 @@
                                     placeholder="Contoh: Kerajinan Batik Tulis Premium"
                                     required
                                 >
-                                <p class="mt-1 text-xs text-gray-500">Maksimal 50 karakter</p>
+                                <p class="mt-1 text-xs text-gray-500">Maksimal 50 karakter. Nama produk harus unik.</p>
+                                <div id="name-validation-message" class="mt-1 text-sm hidden"></div>
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -431,6 +432,88 @@
     priceInput.addEventListener('input', function() {
         // Remove non-numeric characters
         this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Real-time validation for product name
+    const nameInput = document.getElementById('name');
+    const nameValidationMessage = document.getElementById('name-validation-message');
+    const originalName = '{{ $product->name }}';
+    const productId = '{{ $product->id }}';
+    let nameCheckTimeout;
+
+    nameInput.addEventListener('blur', function() {
+        const productName = this.value.trim();
+        
+        // Don't check if name hasn't changed
+        if (productName === originalName) {
+            nameValidationMessage.classList.add('hidden');
+            nameInput.classList.remove('border-red-500', 'border-green-500');
+            nameInput.classList.add('border-gray-300');
+            return;
+        }
+
+        if (productName.length < 3) {
+            return; // Don't check if name is too short
+        }
+
+        // Clear previous timeout
+        clearTimeout(nameCheckTimeout);
+
+        // Show loading state
+        nameValidationMessage.textContent = 'Memeriksa ketersediaan nama...';
+        nameValidationMessage.className = 'mt-1 text-sm text-gray-500';
+        nameValidationMessage.classList.remove('hidden');
+
+        // Check after delay
+        nameCheckTimeout = setTimeout(() => {
+            fetch('{{ route("mitra.products.check-name") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    name: productName,
+                    product_id: productId 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    nameInput.classList.add('border-red-500');
+                    nameInput.classList.remove('border-gray-300');
+                    nameValidationMessage.textContent = 'Nama produk "' + productName + '" sudah digunakan. Silakan gunakan nama yang berbeda.';
+                    nameValidationMessage.className = 'mt-1 text-sm text-red-600';
+                    nameValidationMessage.classList.remove('hidden');
+                } else {
+                    nameInput.classList.remove('border-red-500');
+                    nameInput.classList.add('border-green-500');
+                    nameValidationMessage.textContent = 'Nama produk tersedia ✓';
+                    nameValidationMessage.className = 'mt-1 text-sm text-green-600';
+                    nameValidationMessage.classList.remove('hidden');
+                    
+                    // Hide success message after 2 seconds
+                    setTimeout(() => {
+                        nameValidationMessage.classList.add('hidden');
+                        nameInput.classList.remove('border-green-500');
+                        nameInput.classList.add('border-gray-300');
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Error checking product name:', error);
+                nameValidationMessage.classList.add('hidden');
+            });
+        }, 500);
+    });
+
+    // Clear validation message when user types
+    nameInput.addEventListener('input', function() {
+        clearTimeout(nameCheckTimeout);
+        nameValidationMessage.classList.add('hidden');
+        this.classList.remove('border-red-500', 'border-green-500');
+        this.classList.add('border-gray-300');
     });
 </script>
 @endsection
