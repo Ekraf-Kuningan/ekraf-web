@@ -46,6 +46,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 \App\Filament\Widgets\RoleBasedStatsOverview::class,
                 \App\Filament\Widgets\PendingProductsWidget::class,
+                \App\Filament\Widgets\RejectedProductsWidget::class,
                 \App\Filament\Widgets\RecentActivitiesWidget::class,
                 Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,

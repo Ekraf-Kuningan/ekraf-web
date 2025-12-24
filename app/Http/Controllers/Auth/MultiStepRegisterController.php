@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Level;
 use App\Models\SubSektor;
-use App\Models\Mitra;
+use App\Models\PelakuEkraf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -270,8 +270,8 @@ class MultiStepRegisterController extends Controller
                 'email_verified_at' => now()
             ]);
 
-            // Create Mitra record
-            Mitra::create([
+            // Create Pelaku Ekraf record
+            PelakuEkraf::create([
                 'user_id' => $user->id,
                 'business_name' => $temporaryUser->business_name,
                 'business_status' => $temporaryUser->business_status,
@@ -432,11 +432,11 @@ class MultiStepRegisterController extends Controller
                 break;
 
             case 'business_name':
-                $existsInMitras = Mitra::where('business_name', $value)->exists();
+                $existsInPelakuEkrafs = PelakuEkraf::where('business_name', $value)->exists();
                 $existsInTemp = TemporaryUser::where('business_name', $value)
                     ->where('id', '!=', $tempUserId)
                     ->exists();
-                $available = !$existsInMitras && !$existsInTemp;
+                $available = !$existsInPelakuEkrafs && !$existsInTemp;
                 $message = $available ? 'Nama usaha tersedia' : 'Nama usaha sudah terdaftar';
                 break;
         }

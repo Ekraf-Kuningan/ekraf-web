@@ -11,11 +11,12 @@ use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\Auth\CustomLoginController;
 use App\Http\Controllers\Auth\CustomRegisterController;
 use App\Http\Controllers\Auth\MultiStepRegisterController;
-use App\Http\Controllers\Mitra\MitraDashboardController;
-use App\Http\Controllers\Mitra\MitraProductController;
-use App\Http\Controllers\Mitra\MitraProfileController;
-use App\Http\Controllers\Mitra\MitraKatalogController;
-use App\Http\Controllers\Mitra\MitraKatalogBrowseController;
+use App\Http\Controllers\PelakuEkraf\PelakuEkrafDashboardController;
+use App\Http\Controllers\PelakuEkraf\PelakuEkrafProductController;
+use App\Http\Controllers\PelakuEkraf\PelakuEkrafProfileController;
+use App\Http\Controllers\PelakuEkraf\PelakuEkrafKatalogController;
+use App\Http\Controllers\PelakuEkraf\PelakuEkrafKatalogBrowseController;
+use App\Http\Controllers\PelakuEkraf\PelakuEkrafTestimonialController;
 use Illuminate\Support\Str;
 use App\Http\Controllers\ProductViewController;
 use App\Http\Controllers\KatalogViewController;
@@ -112,37 +113,37 @@ Route::get('/storage/{path}', function ($path) {
 require __DIR__.'/auth.php';
 
 // =========================
-// Mitra (UMKM) Dashboard
+// Pelaku Ekraf (UMKM) Dashboard
 // =========================
-Route::middleware('auth')->prefix('mitra')->name('mitra.')->group(function () {
-    Route::get('/', [MitraDashboardController::class, 'index'])->name('dashboard');
+Route::middleware('auth')->prefix('pelaku-ekraf')->name('pelaku-ekraf.')->group(function () {
+    Route::get('/', [PelakuEkrafDashboardController::class, 'index'])->name('dashboard');
 
     // Browse Katalog Products (All Approved Products)
-    Route::get('/katalog-produk', [MitraKatalogBrowseController::class, 'index'])->name('katalog');
-    Route::get('/katalog-produk/{id}', [MitraKatalogBrowseController::class, 'show'])->name('katalog.show');
+    Route::get('/katalog-produk', [PelakuEkrafKatalogBrowseController::class, 'index'])->name('katalog');
+    Route::get('/katalog-produk/{id}', [PelakuEkrafKatalogBrowseController::class, 'show'])->name('katalog.show');
 
     // Katalog Management Routes (only index and show - katalog dibuat oleh admin)
-    Route::get('/katalog-management', [MitraKatalogController::class, 'index'])->name('katalog-management.index');
-    Route::get('/katalog-management/{id}', [MitraKatalogController::class, 'show'])->name('katalog-management.show');
+    Route::get('/katalog-management', [PelakuEkrafKatalogController::class, 'index'])->name('katalog-management.index');
+    Route::get('/katalog-management/{id}', [PelakuEkrafKatalogController::class, 'show'])->name('katalog-management.show');
 
     // Product Management Routes
-    Route::get('/products', [MitraProductController::class, 'index'])->name('products');
-    Route::get('/products/create', [MitraProductController::class, 'create'])->name('products.create');
-    Route::post('/products', [MitraProductController::class, 'store'])->name('products.store');
-    Route::post('/products/check-name', [MitraProductController::class, 'checkProductName'])->name('products.check-name');
-    Route::get('/products/{product}', [MitraProductController::class, 'show'])->name('products.show');
-    Route::get('/products/{product}/edit', [MitraProductController::class, 'edit'])->name('products.edit');
-    Route::put('/products/{product}', [MitraProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/{product}', [MitraProductController::class, 'destroy'])->name('products.destroy');
+    Route::get('/products', [PelakuEkrafProductController::class, 'index'])->name('products');
+    Route::get('/products/create', [PelakuEkrafProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [PelakuEkrafProductController::class, 'store'])->name('products.store');
+    Route::post('/products/check-name', [PelakuEkrafProductController::class, 'checkProductName'])->name('products.check-name');
+    Route::get('/products/{product}', [PelakuEkrafProductController::class, 'show'])->name('products.show');
+    Route::get('/products/{product}/edit', [PelakuEkrafProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{product}', [PelakuEkrafProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [PelakuEkrafProductController::class, 'destroy'])->name('products.destroy');
 
     // Profile Management Routes
-    Route::get('/profile', [MitraProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile', [MitraProfileController::class, 'update'])->name('profile.update');
-    Route::post('/profile/password', [MitraProfileController::class, 'updatePassword'])->name('profile.updatePassword');
-    Route::delete('/profile/image', [MitraProfileController::class, 'deleteImage'])->name('profile.deleteImage');
+    Route::get('/profile', [PelakuEkrafProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [PelakuEkrafProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [PelakuEkrafProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+    Route::delete('/profile/image', [PelakuEkrafProfileController::class, 'deleteImage'])->name('profile.deleteImage');
     
     // Testimonial Routes
-    Route::get('/testimonial', [App\Http\Controllers\Mitra\MitraTestimonialController::class, 'index'])->name('testimonial.index');
-    Route::post('/testimonial', [App\Http\Controllers\Mitra\MitraTestimonialController::class, 'store'])->name('testimonial.store');
-    Route::delete('/testimonial', [App\Http\Controllers\Mitra\MitraTestimonialController::class, 'destroy'])->name('testimonial.destroy');
+    Route::get('/testimonial', [PelakuEkrafTestimonialController::class, 'index'])->name('testimonial.index');
+    Route::post('/testimonial', [PelakuEkrafTestimonialController::class, 'store'])->name('testimonial.store');
+    Route::delete('/testimonial', [PelakuEkrafTestimonialController::class, 'destroy'])->name('testimonial.destroy');
 });

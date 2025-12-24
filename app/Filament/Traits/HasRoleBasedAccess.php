@@ -50,7 +50,7 @@ trait HasRoleBasedAccess
     {
         return [
             \App\Filament\Resources\ProductResource::class,
-            \App\Filament\Resources\MitraResource::class,
+            \App\Filament\Resources\PelakuEkrafResource::class,
         ];
     }
     
@@ -122,8 +122,8 @@ trait HasRoleBasedAccess
             if (static::class === \App\Filament\Resources\ProductResource::class) {
                 return true; // Can approve/reject products
             }
-            if (static::class === \App\Filament\Resources\MitraResource::class) {
-                return true; // Can view mitra details
+            if (static::class === \App\Filament\Resources\PelakuEkrafResource::class) {
+                return true; // Can view pelaku ekraf details
             }
             return false;
         }

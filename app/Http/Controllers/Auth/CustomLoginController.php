@@ -52,7 +52,7 @@ class CustomLoginController extends Controller
             }
 
             // Default arahkan ke dashboard mitra
-            return redirect()->intended(route('mitra.dashboard'));
+            return redirect()->intended(route('pelaku-ekraf.dashboard'));
         }
 
         throw ValidationException::withMessages([

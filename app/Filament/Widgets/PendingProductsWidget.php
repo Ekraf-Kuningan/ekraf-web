@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Product;
+use Filament\Forms;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -63,19 +64,43 @@ class PendingProductsWidget extends BaseWidget
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->action(function (Product $record) {
-                        $record->update(['status' => 'approved']);
+                        $record->update([
+                            'status' => 'approved',
+                            'verified_at' => now(),
+                            'verified_by' => auth()->id(),
+                        ]);
                         $this->resetTable();
                     })
-                    ->requiresConfirmation(),
+                    ->requiresConfirmation()
+                    ->modalHeading('Setujui Produk')
+                    ->modalDescription('Apakah Anda yakin ingin menyetujui produk ini?')
+                    ->modalSubmitActionLabel('Ya, Setujui'),
+                    
                 Tables\Actions\Action::make('reject')
                     ->label('Tolak')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
-                    ->action(function (Product $record) {
-                        $record->update(['status' => 'rejected']);
+                    ->form([
+                        Forms\Components\Textarea::make('rejection_reason')
+                            ->label('Alasan Penolakan')
+                            ->required()
+                            ->maxLength(500)
+                            ->rows(3)
+                            ->placeholder('Contoh: Gambar tidak jelas, deskripsi kurang lengkap, harga tidak wajar...')
+                    ])
+                    ->action(function (Product $record, array $data) {
+                        $record->update([
+                            'status' => 'rejected',
+                            'rejection_reason' => $data['rejection_reason'],
+                            'verified_at' => now(),
+                            'verified_by' => auth()->id(),
+                        ]);
                         $this->resetTable();
                     })
-                    ->requiresConfirmation(),
+                    ->requiresConfirmation()
+                    ->modalHeading('Tolak Produk')
+                    ->modalDescription('Berikan alasan penolakan produk ini')
+                    ->modalSubmitActionLabel('Ya, Tolak'),
             ])
             ->defaultSort('uploaded_at', 'desc')
             ->paginated([5, 10]);

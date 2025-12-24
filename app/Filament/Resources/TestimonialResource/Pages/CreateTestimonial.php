@@ -11,4 +11,8 @@ class CreateTestimonial extends CreateRecord
     protected static string $resource = TestimonialResource::class;
     protected static ?string $title = 'Tambah Testimoni';
     protected static ?string $breadcrumb = 'Tambah Testimoni';
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

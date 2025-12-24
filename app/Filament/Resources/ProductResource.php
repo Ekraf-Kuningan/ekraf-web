@@ -287,7 +287,11 @@ class ProductResource extends Resource
                         ->modalDescription('Apakah Anda yakin ingin menyetujui produk ini?')
                         ->modalSubmitActionLabel('Ya, Setujui')
                         ->action(function (Product $record) {
-                            $record->update(['status' => 'approved']);
+                            $record->update([
+                                'status' => 'approved',
+                                'verified_at' => now(),
+                                'verified_by' => auth()->id(),
+                            ]);
                             
                             Notification::make()
                                 ->success()
@@ -304,15 +308,29 @@ class ProductResource extends Resource
                         ->color('danger')
                         ->requiresConfirmation()
                         ->modalHeading('Tolak Produk')
-                        ->modalDescription('Apakah Anda yakin ingin menolak produk ini?')
+                        ->modalDescription('Berikan alasan penolakan produk ini')
                         ->modalSubmitActionLabel('Ya, Tolak')
-                        ->action(function (Product $record) {
-                            $record->update(['status' => 'rejected']);
+                        ->form([
+                            Forms\Components\Textarea::make('rejection_reason')
+                                ->label('Alasan Penolakan')
+                                ->required()
+                                ->maxLength(500)
+                                ->rows(4)
+                                ->placeholder('Contoh: Gambar produk tidak jelas, deskripsi tidak lengkap, harga tidak wajar, dll.')
+                                ->helperText('Alasan ini akan dilihat oleh pelaku ekraf')
+                        ])
+                        ->action(function (Product $record, array $data) {
+                            $record->update([
+                                'status' => 'rejected',
+                                'rejection_reason' => $data['rejection_reason'],
+                                'verified_at' => now(),
+                                'verified_by' => auth()->id(),
+                            ]);
                             
                             Notification::make()
                                 ->danger()
                                 ->title('Produk Ditolak')
-                                ->body('Produk "' . $record->name . '" telah ditolak.')
+                                ->body('Produk "' . $record->name . '" telah ditolak dengan alasan: ' . $data['rejection_reason'])
                                 ->send();
                         })
                         ->visible(fn (Product $record) => $record->status === 'pending'),
@@ -343,7 +361,11 @@ class ProductResource extends Resource
                             $count = 0;
                             $records->each(function (Product $record) use (&$count) {
                                 if ($record->status === 'pending') {
-                                    $record->update(['status' => 'approved']);
+                                    $record->update([
+                                        'status' => 'approved',
+                                        'verified_at' => now(),
+                                        'verified_by' => auth()->id(),
+                                    ]);
                                     $count++;
                                 }
                             });
@@ -362,13 +384,27 @@ class ProductResource extends Resource
                         ->color('danger')
                         ->requiresConfirmation()
                         ->modalHeading('Tolak Produk Terpilih')
-                        ->modalDescription('Apakah Anda yakin ingin menolak semua produk yang dipilih?')
+                        ->modalDescription('Berikan alasan penolakan untuk semua produk yang dipilih')
                         ->modalSubmitActionLabel('Ya, Tolak Semua')
-                        ->action(function (Collection $records) {
+                        ->form([
+                            Forms\Components\Textarea::make('rejection_reason')
+                                ->label('Alasan Penolakan (untuk semua produk yang dipilih)')
+                                ->required()
+                                ->maxLength(500)
+                                ->rows(4)
+                                ->placeholder('Contoh: Gambar produk tidak memenuhi standar, kategori tidak sesuai, dll.')
+                                ->helperText('Alasan yang sama akan diterapkan ke semua produk yang dipilih')
+                        ])
+                        ->action(function (Collection $records, array $data) {
                             $count = 0;
-                            $records->each(function (Product $record) use (&$count) {
+                            $records->each(function (Product $record) use (&$count, $data) {
                                 if ($record->status === 'pending') {
-                                    $record->update(['status' => 'rejected']);
+                                    $record->update([
+                                        'status' => 'rejected',
+                                        'rejection_reason' => $data['rejection_reason'],
+                                        'verified_at' => now(),
+                                        'verified_by' => auth()->id(),
+                                    ]);
                                     $count++;
                                 }
                             });
@@ -376,7 +412,7 @@ class ProductResource extends Resource
                             Notification::make()
                                 ->danger()
                                 ->title('Produk Ditolak')
-                                ->body($count . ' produk telah ditolak.')
+                                ->body($count . ' produk telah ditolak dengan alasan: ' . $data['rejection_reason'])
                                 ->send();
                         }),
 

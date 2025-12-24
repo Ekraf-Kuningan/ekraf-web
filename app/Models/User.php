@@ -74,11 +74,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the sub sektor through mitra.
+     * Get the sub sektor through pelaku ekraf.
      */
     public function subSektor()
     {
-        return $this->hasOneThrough(SubSektor::class, Mitra::class, 'user_id', 'id', 'id', 'sub_sektor_id');
+        return $this->hasOneThrough(SubSektor::class, PelakuEkraf::class, 'user_id', 'id', 'id', 'sub_sektor_id');
     }
 
     /**
@@ -90,11 +90,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the mitra record associated with the user (business details).
+     * Get the pelaku ekraf record associated with the user (business details).
+     */
+    public function pelakuEkraf()
+    {
+        return $this->hasOne(PelakuEkraf::class, 'user_id');
+    }
+
+    /**
+     * Alias for pelakuEkraf relationship (backward compatibility).
      */
     public function mitra()
     {
-        return $this->hasOne(Mitra::class, 'user_id');
+        return $this->pelakuEkraf();
     }
 
     /**

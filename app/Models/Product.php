@@ -25,11 +25,15 @@ class Product extends Model
         'user_id',
         'sub_sektor_id',
         'business_category_id',
-        'status'
+        'status',
+        'rejection_reason',
+        'verified_at',
+        'verified_by',
     ];
 
     protected $casts = [
         'uploaded_at' => 'datetime',
+        'verified_at' => 'datetime',
         'price' => 'decimal:2',
         'cloudinary_meta' => 'array',
     ];
@@ -85,6 +89,14 @@ class Product extends Model
     public function businessCategory()
     {
         return $this->belongsTo(BusinessCategory::class, 'business_category_id');
+    }
+
+    /**
+     * Relationship dengan admin yang melakukan verifikasi
+     */
+    public function verifier()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
     public function onlineStoreLinks()
