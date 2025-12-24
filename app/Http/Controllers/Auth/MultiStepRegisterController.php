@@ -168,7 +168,7 @@ class MultiStepRegisterController extends Controller
             'nib' => ['nullable', 'string', 'size:13', 'regex:/^[0-9]{13}$/', 'unique:users,nib', 'unique:temporary_users,nib,' . $temporaryUser->id],
             'alamat' => ['required', 'string', 'max:500'],
             'gender' => ['required', 'in:male,female'],
-            'business_name' => ['required', 'string', 'max:255', 'unique:mitras,business_name', 'unique:temporary_users,business_name,' . $temporaryUser->id],
+            'business_name' => ['required', 'string', 'max:255', 'unique:pelakuekrafs,business_name', 'unique:temporary_users,business_name,' . $temporaryUser->id],
             'business_status' => ['required', 'in:new,existing,BARU,SUDAH_LAMA'],
             'sub_sektor_id' => ['required', 'exists:sub_sectors,id'],
             'profile_image' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
