@@ -40,21 +40,6 @@ class SubSektorResource extends Resource
                 Forms\Components\TextInput::make('slug')
                     ->readOnly(),
                     
-                Forms\Components\FileUpload::make('image')
-                    ->label('Sub Sector Image')
-                    ->image()
-                    ->directory('sub-sectors')
-                    ->disk('public')
-                    ->visibility('public')
-                    ->maxSize(2048) // 2MB
-                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                    ->imageResizeMode('cover')
-                    ->imageCropAspectRatio('16:9')
-                    ->imageResizeTargetWidth('800')
-                    ->imageResizeTargetHeight('450')
-                    ->nullable()
-                    ->columnSpanFull(),
-                    
                 Forms\Components\Textarea::make('description')
                     ->label('Description')
                     ->rows(3)
@@ -68,10 +53,6 @@ class SubSektorResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Image')
-                    ->square()
-                    ->size(50),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
                     ->sortable()

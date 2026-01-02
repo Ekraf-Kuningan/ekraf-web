@@ -44,14 +44,9 @@ class ArtikelKategoriResource extends Resource
                     ->label('Category Icon')
                     ->image()
                     ->directory('article-categories')
-                    ->disk('public')
-                    ->visibility('public')
+                    ->disk('cloudinary')
                     ->maxSize(1024) // 1MB
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'])
-                    ->imageResizeMode('cover')
-                    ->imageCropAspectRatio('1:1')
-                    ->imageResizeTargetWidth('150')
-                    ->imageResizeTargetHeight('150')
                     ->nullable()
                     ->helperText('Upload an icon for this article category.'),
                     
@@ -75,8 +70,10 @@ class ArtikelKategoriResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('icon')
                     ->label('Icon')
+                    ->disk('cloudinary')
                     ->circular()
-                    ->size(40),
+                    ->size(40)
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
                     ->sortable()

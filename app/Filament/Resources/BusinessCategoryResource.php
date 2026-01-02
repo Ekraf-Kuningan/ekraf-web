@@ -40,21 +40,6 @@ class BusinessCategoryResource extends Resource
                     ->required()
                     ->maxLength(50)
                     ->unique(BusinessCategory::class, 'name', ignoreRecord: true),
-
-                Forms\Components\FileUpload::make('image')
-                    ->label('Category Icon/Image')
-                    ->image()
-                    ->directory('business-categories')
-                    ->disk('public')
-                    ->visibility('public')
-                    ->maxSize(1024) // 1MB
-                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'])
-                    ->imageResizeMode('cover')
-                    ->imageCropAspectRatio('1:1')
-                    ->imageResizeTargetWidth('200')
-                    ->imageResizeTargetHeight('200')
-                    ->helperText('Upload an icon or image for this category. SVG, PNG, JPEG, WebP allowed.')
-                    ->nullable(),
             ]);
     }
 
@@ -75,10 +60,6 @@ class BusinessCategoryResource extends Resource
                     ->label('Category Name')
                     ->searchable()
                     ->sortable(),
-
-                Tables\Columns\ImageColumn::make('image')
-                    ->label('Image')
-                    ->square(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('sub_sector_id')
