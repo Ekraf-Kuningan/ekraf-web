@@ -31,6 +31,17 @@ class TestimonialResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
+    public static function canViewAny(): bool
+    {
+        return true; // Force allow all users to view
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -152,35 +163,41 @@ class TestimonialResource extends Resource
                     ->formatStateUsing(fn (int $state): string => str_repeat('⭐', $state))
                     ->alignCenter(),
 
-                Tables\Columns\BadgeColumn::make('type')
+                Tables\Columns\TextColumn::make('type')
                     ->label('Jenis')
-                    ->colors([
-                        'success' => 'testimoni',
-                        'info' => 'saran',
-                        'warning' => 'masukan',
-                    ])
-                    ->icons([
-                        'heroicon-o-star' => 'testimoni',
-                        'heroicon-o-light-bulb' => fn (string $state): bool => in_array($state, ['saran', 'masukan']),
-                    ])
+                    ->badge()
+                    ->color(fn (string $state): string => match($state) {
+                        'testimoni' => 'success',
+                        'saran', 'masukan' => 'info',
+                        default => 'gray',
+                    })
+                    ->icon(fn (string $state): string => match($state) {
+                        'testimoni' => 'heroicon-o-star',
+                        'saran', 'masukan' => 'heroicon-o-light-bulb',
+                        default => 'heroicon-o-document-text',
+                    })
                     ->formatStateUsing(fn (string $state): string => $state === 'testimoni' ? 'Testimoni' : 'Saran/Masukan'),
 
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
                     ->label('Status')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'approved',
-                        'danger' => 'rejected',
-                    ])
-                    ->icons([
-                        'heroicon-o-clock' => 'pending',
-                        'heroicon-o-check-circle' => 'approved',
-                        'heroicon-o-x-circle' => 'rejected',
-                    ])
+                    ->badge()
+                    ->color(fn (string $state): string => match($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        default => 'gray',
+                    })
+                    ->icon(fn (string $state): string => match($state) {
+                        'pending' => 'heroicon-o-clock',
+                        'approved' => 'heroicon-o-check-circle',
+                        'rejected' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
+                    })
                     ->formatStateUsing(fn (string $state): string => match($state) {
                         'pending' => 'Pending',
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
+                        default => $state,
                     }),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -206,10 +223,15 @@ class TestimonialResource extends Resource
                         'saran' => 'Saran/Masukan',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
+                        if (empty($data['value'])) {
+                            return $query;
+                        }
+                        
                         if ($data['value'] === 'saran') {
                             return $query->whereIn('type', ['saran', 'masukan']);
                         }
-                        return $query->where('type', $data['value'] ?? '');
+                        
+                        return $query->where('type', $data['value']);
                     }),
 
                 Tables\Filters\SelectFilter::make('rating')

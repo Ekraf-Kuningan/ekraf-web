@@ -32,7 +32,7 @@ class SubSektor extends Model
 
     public function mitras()
     {
-        return $this->hasMany(Mitra::class, 'sub_sektor_id');
+        return $this->hasMany(PelakuEkraf::class, 'sub_sektor_id');
     }
 
     public function products()

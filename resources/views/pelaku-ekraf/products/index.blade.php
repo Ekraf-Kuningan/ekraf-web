@@ -407,7 +407,7 @@ function openProductModal(productId) {
                     </div>
                     <div class="h-12 w-px bg-orange-300"></div>
                     <div class="flex-1">
-                        <p class="text-sm text-gray-600 mb-1">Stok</p>
+                        <p class="text-sm text-orange-600 mb-1">Stok</p>
                         <p class="text-2xl font-bold text-gray-900">${product.stock}</p>
                     </div>
                 </div>

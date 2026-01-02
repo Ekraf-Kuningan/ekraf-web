@@ -16,6 +16,11 @@ class ListTestimonials extends ListRecords
     protected static ?string $navigationLabel = 'Daftar Testimoni';
     protected static ?string $breadcrumb = 'Daftar Testimoni';
 
+    public function getDefaultActiveTab(): string | int | null
+    {
+        return 'semua';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
@@ -29,32 +34,33 @@ class ListTestimonials extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('Semua')
+            'semua' => Tab::make('Semua')
                 ->badge(Testimonial::count()),
+                
             'pending' => Tab::make('Pending')
                 ->badge(Testimonial::where('status', 'pending')->count())
                 ->badgeColor('warning')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'pending')),
+                
             'approved' => Tab::make('Disetujui')
                 ->badge(Testimonial::where('status', 'approved')->count())
                 ->badgeColor('success')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'approved')),
+                
             'rejected' => Tab::make('Ditolak')
                 ->badge(Testimonial::where('status', 'rejected')->count())
                 ->badgeColor('danger')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'rejected')),
+                
             'testimoni' => Tab::make('Testimoni')
                 ->badge(Testimonial::where('type', 'testimoni')->count())
                 ->badgeColor('success')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'testimoni')),
+                
             'saran' => Tab::make('Saran')
-                ->badge(Testimonial::where('type', 'saran')->count())
+                ->badge(Testimonial::whereIn('type', ['saran', 'masukan'])->count())
                 ->badgeColor('info')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'saran')),
-            'masukan' => Tab::make('Masukan')
-                ->badge(Testimonial::where('type', 'masukan')->count())
-                ->badgeColor('warning')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'masukan')),
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('type', ['saran', 'masukan'])),
         ];
     }
 }
