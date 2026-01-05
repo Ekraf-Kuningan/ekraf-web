@@ -102,7 +102,7 @@
 
         {{-- Numbered pagination --}}
         <div class="mt-4 flex justify-center">
-            {{ $katalogs->onEachSide(1)->links() }}
+            {{ $katalogs->onEachSide(1)->links('vendor.filament.components.pagination.custom-pagination') }}
         </div>
     </div>
     {{-- Yuk beres  yuk--}}
