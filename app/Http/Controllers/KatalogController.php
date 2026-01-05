@@ -30,7 +30,7 @@ class KatalogController extends Controller
             $katalogs->orderBy('created_at', 'desc');
         }
 
-        $katalogs = $katalogs->paginate(6)->withQueryString();
+        $katalogs = $katalogs->paginate(8)->withQueryString();
 
         return view('pages.katalog', compact('subsektors', 'katalogs'));
     }
@@ -41,7 +41,7 @@ class KatalogController extends Controller
         $katalogs = Katalog::with(['subSektor', 'products'])->withCount('products')
             ->where('sub_sector_id', $selectedSubsektor->id)
             ->latest()
-            ->paginate(6)
+            ->paginate(8)
             ->withQueryString();
 
         return view('pages.katalog', compact('subsektors', 'katalogs', 'selectedSubsektor'));
